@@ -107,7 +107,7 @@ fn mk_input(roots: Vec<(&str, BookmarkNodeDto)>) -> BookmarksFileDto {
     }
 }
 
-fn traverse<'a>(root: &'a BookmarkNodeDto) -> Vec<&'a BookmarkNodeDto> {
+fn traverse(root: &BookmarkNodeDto) -> Vec<&BookmarkNodeDto> {
     let mut out = Vec::new();
     let mut stack = vec![root];
     while let Some(n) = stack.pop() {
@@ -131,7 +131,7 @@ fn find_folders_named<'a>(dto: &'a BookmarksFileDto, name: &str) -> Vec<&'a Book
     found
 }
 
-fn find_urls_in_folder<'a>(folder: &'a BookmarkNodeDto) -> Vec<&'a BookmarkNodeDto> {
+fn find_urls_in_folder(folder: &BookmarkNodeDto) -> Vec<&BookmarkNodeDto> {
     folder
         .children
         .iter()
@@ -389,7 +389,7 @@ async fn preserves_unknown_fields_and_adds_top_level_merge_meta() {
 
     assert_eq!(out.extra.get("top"), Some(&json!("keep_top")));
     assert!(
-        out.extra.get("x_merge_meta").is_some(),
+        out.extra.contains_key("x_merge_meta"),
         "normalize should always add top-level x_merge_meta"
     );
 
@@ -441,4 +441,160 @@ async fn emits_scc_event_with_cyclic_component_count() {
     assert_eq!(edges, 3, "root->A plus A<->B cycle");
     assert_eq!(cyclic_components, 1);
     assert_eq!(components, 2);
+}
+
+#[tokio::test]
+async fn global_folder_merge_normalizes_names_and_merges_across_roots() {
+    // bookmark_bar: "  Work "
+    // other: "work" (same normalized name, different root)
+    let work_bar = folder(
+        "  Work ",
+        Some("10"),
+        Some("guid-work-bar"),
+        Some("100"),
+        vec![url(
+            "from_bar",
+            Some("1"),
+            "http://example.com/from_bar",
+            None,
+            None,
+            Some("10"),
+        )],
+    );
+    let work_other = folder(
+        "work",
+        Some("20"),
+        Some("guid-work-other"),
+        Some("200"),
+        vec![url(
+            "from_other",
+            Some("2"),
+            "http://example.com/from_other",
+            None,
+            None,
+            Some("20"),
+        )],
+    );
+
+    let input = mk_input(vec![
+        ("bookmark_bar", root(vec![work_bar])),
+        ("other", root(vec![work_other])),
+    ]);
+
+    let canonicalizer = DefaultUrlCanonicalizer;
+    let scc = KosarajuSccDetector;
+
+    let (out, stats) = normalize_bookmarks(input, &canonicalizer, &scc, None)
+        .await
+        .expect("normalize_bookmarks should succeed");
+
+    assert_eq!(
+        stats.folders_merged, 1,
+        "normalized names across roots should merge into one folder",
+    );
+
+    // Only one Work folder remains, under either original spelling.
+    let mut work_folders = Vec::new();
+    work_folders.extend_from_slice(&find_folders_named(&out, "  Work "));
+    work_folders.extend_from_slice(&find_folders_named(&out, "work"));
+    assert_eq!(work_folders.len(), 1, "global uniqueness by normalized name");
+
+    let work = work_folders[0];
+    let urls = find_urls_in_folder(work);
+    assert_eq!(urls.len(), 2, "both folders' URLs should be merged into winner");
+    let mut url_names: Vec<String> = urls
+        .iter()
+        .map(|u| u.name.clone().unwrap_or_default())
+        .collect();
+    url_names.sort();
+    assert_eq!(url_names, vec!["from_bar".to_string(), "from_other".to_string()]);
+
+    let meta = work
+        .extra
+        .get("x_merge_meta")
+        .cloned()
+        .expect("winner folder should have x_merge_meta for merged names and paths");
+    let merged_names = meta["merged_names"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    assert!(
+        merged_names
+            .iter()
+            .any(|v| v.as_str() == Some("work") || v.as_str() == Some("  Work ")),
+        "x_merge_meta.merged_names should record loser folder name",
+    );
+    let merged_paths = meta["merged_paths"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    assert!(
+        merged_paths
+            .iter()
+            .any(|v| v.as_str().map(|s| s.starts_with("other/")).unwrap_or(false)),
+        "x_merge_meta.merged_paths should record loser folder path from 'other' root",
+    );
+}
+
+#[tokio::test]
+async fn url_dedup_resolves_ties_by_id_when_other_fields_equal() {
+    let a = folder(
+        "A",
+        Some("1"),
+        None,
+        Some("100"),
+        vec![
+            url(
+                "first",
+                Some("10"),
+                "http://example.com/tie#one",
+                Some(5),
+                Some("100"),
+                Some("50"),
+            ),
+            url(
+                "second",
+                Some("5"),
+                "HTTP://EXAMPLE.com/tie#two",
+                Some(5),
+                Some("100"),
+                Some("50"),
+            ),
+        ],
+    );
+
+    let input = mk_input(vec![("bookmark_bar", root(vec![a]))]);
+
+    let canonicalizer = DefaultUrlCanonicalizer;
+    let scc = KosarajuSccDetector;
+
+    let (out, stats) = normalize_bookmarks(input, &canonicalizer, &scc, None)
+        .await
+        .expect("normalize_bookmarks should succeed");
+
+    assert_eq!(
+        stats.urls_deduped, 1,
+        "one of the duplicate URLs should be removed",
+    );
+
+    let a_out = find_folders_named(&out, "A");
+    assert_eq!(a_out.len(), 1);
+    let urls = find_urls_in_folder(a_out[0]);
+    assert_eq!(urls.len(), 1);
+
+    let winner = urls[0];
+    // With equal visit_count, date_last_used and date_added, smallest numeric id should win.
+    assert_eq!(winner.id.as_deref(), Some("5"));
+
+    let meta = winner
+        .extra
+        .get("x_merge_meta")
+        .cloned()
+        .expect("winner URL should record merged_from losers");
+    let merged_from = meta["merged_from"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    assert_eq!(merged_from.len(), 1);
+    assert_eq!(merged_from[0]["id"].as_str(), Some("10"));
 }
