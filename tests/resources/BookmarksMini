@@ -1,0 +1,596 @@
+{
+  "checksum": "test-checksum",
+  "roots": {
+    "bookmark_bar": {
+      "type": "folder",
+      "date_added": "13200000000000000",
+      "date_last_used": "0",
+      "date_modified": "13200000000000000",
+      "guid": "guid-bookmark-bar",
+      "id": "1",
+      "source": "sync",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Work",
+          "date_added": "13200000000000000",
+          "children": [
+            {
+              "type": "url",
+              "name": "Google",
+              "url": "https://google.com",
+              "date_added": "13200000000000001",
+              "date_last_used": "13200000000000001",
+              "guid": "guid-google-1",
+              "id": "1001",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 10
+            },
+            {
+              "type": "url",
+              "name": "Google Dup",
+              "url": "https://google.com",
+              "date_added": "13200000000000002",
+              "date_last_used": "13200000000000002",
+              "guid": "guid-google-2",
+              "id": "1002",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 5
+            },
+            {
+              "type": "url",
+              "name": "Example",
+              "url": "https://example.com",
+              "date_added": "13200000000000003",
+              "date_last_used": "13200000000000003",
+              "guid": "guid-example-1",
+              "id": "1003",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 8
+            },
+            {
+              "type": "url",
+              "name": "Example Dup",
+              "url": "https://example.com",
+              "date_added": "13200000000000004",
+              "date_last_used": "13200000000000004",
+              "guid": "guid-example-2",
+              "id": "1004",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 3
+            },
+            {
+              "type": "url",
+              "name": "GitHub",
+              "url": "https://github.com",
+              "date_added": "13200000000000005",
+              "date_last_used": "13200000000000005",
+              "guid": "guid-github-1",
+              "id": "1005",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 15
+            },
+            {
+              "type": "url",
+              "name": "GitHub Dup",
+              "url": "https://github.com",
+              "date_added": "13200000000000006",
+              "date_last_used": "13200000000000006",
+              "guid": "guid-github-2",
+              "id": "1006",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 7
+            },
+            {
+              "type": "folder",
+              "name": "work",
+              "date_added": "13200000000000007",
+              "date_last_used": "0",
+              "date_modified": "13200000000000007",
+              "guid": "guid-work-sub",
+              "id": "2001",
+              "source": "sync",
+              "children": [
+                {
+                  "type": "url",
+                  "name": "Stack Overflow",
+                  "url": "https://stackoverflow.com",
+                  "date_added": "13200000000000008",
+                  "date_last_used": "13200000000000008",
+                  "guid": "guid-stackoverflow",
+                  "id": "1007",
+                  "show_icon": false,
+                  "source": "sync",
+                  "visit_count": 12
+                }
+              ]
+            },
+            {
+              "type": "folder",
+              "name": "Empty Nested",
+              "date_added": "13200000000000046",
+              "date_last_used": "0",
+              "date_modified": "13200000000000046",
+              "guid": "guid-empty-nested",
+              "id": "2011",
+              "source": "sync",
+              "children": []
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Personal",
+          "date_added": "13200000000000009",
+          "date_last_used": "0",
+          "date_modified": "13200000000000009",
+          "guid": "guid-personal",
+          "id": "2002",
+          "source": "sync",
+          "children": [
+            {
+              "type": "url",
+              "name": "YouTube",
+              "url": "https://youtube.com",
+              "date_added": "13200000000000010",
+              "date_last_used": "13200000000000010",
+              "guid": "guid-youtube-1",
+              "id": "1008",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 50
+            },
+            {
+              "type": "url",
+              "name": "YouTube Dup",
+              "url": "https://youtube.com",
+              "date_added": "13200000000000011",
+              "date_last_used": "13200000000000011",
+              "guid": "guid-youtube-2",
+              "id": "1009",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 25
+            },
+            {
+              "type": "url",
+              "name": "Reddit",
+              "url": "https://reddit.com",
+              "date_added": "13200000000000012",
+              "date_last_used": "13200000000000012",
+              "guid": "guid-reddit-1",
+              "id": "1010",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 30
+            },
+            {
+              "type": "url",
+              "name": "Reddit Dup",
+              "url": "https://reddit.com",
+              "date_added": "13200000000000013",
+              "date_last_used": "13200000000000013",
+              "guid": "guid-reddit-2",
+              "id": "1011",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 15
+            },
+            {
+              "type": "url",
+              "name": "Twitter",
+              "url": "https://twitter.com",
+              "date_added": "13200000000000014",
+              "date_last_used": "13200000000000014",
+              "guid": "guid-twitter-1",
+              "id": "1012",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 20
+            },
+            {
+              "type": "url",
+              "name": "Twitter Dup",
+              "url": "https://twitter.com",
+              "date_added": "13200000000000015",
+              "date_last_used": "13200000000000015",
+              "guid": "guid-twitter-2",
+              "id": "1013",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 10
+            },
+            {
+              "type": "folder",
+              "name": "personal",
+              "date_added": "13200000000000016",
+              "date_last_used": "0",
+              "date_modified": "13200000000000016",
+              "guid": "guid-personal-sub",
+              "id": "2003",
+              "source": "sync",
+              "children": [
+                {
+                  "type": "url",
+                  "name": "Facebook",
+                  "url": "https://facebook.com",
+                  "date_added": "13200000000000017",
+                  "date_last_used": "13200000000000017",
+                  "guid": "guid-facebook",
+                  "id": "1014",
+                  "show_icon": false,
+                  "source": "sync",
+                  "visit_count": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Tools",
+          "date_added": "13200000000000018",
+          "date_last_used": "0",
+          "date_modified": "13200000000000018",
+          "guid": "guid-tools",
+          "id": "2004",
+          "source": "sync",
+          "children": [
+            {
+              "type": "url",
+              "name": "VS Code",
+              "url": "https://code.visualstudio.com",
+              "date_added": "13200000000000019",
+              "date_last_used": "13200000000000019",
+              "guid": "guid-vscode-1",
+              "id": "1015",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 35
+            },
+            {
+              "type": "url",
+              "name": "VS Code Dup",
+              "url": "https://code.visualstudio.com",
+              "date_added": "13200000000000020",
+              "date_last_used": "13200000000000020",
+              "guid": "guid-vscode-2",
+              "id": "1016",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 18
+            },
+            {
+              "type": "url",
+              "name": "Postman",
+              "url": "https://postman.com",
+              "date_added": "13200000000000021",
+              "date_last_used": "13200000000000021",
+              "guid": "guid-postman-1",
+              "id": "1017",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 22
+            },
+            {
+              "type": "url",
+              "name": "Postman Dup",
+              "url": "https://postman.com",
+              "date_added": "13200000000000022",
+              "date_last_used": "13200000000000022",
+              "guid": "guid-postman-2",
+              "id": "1018",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 11
+            },
+            {
+              "type": "url",
+              "name": "Docker",
+              "url": "https://docker.com",
+              "date_added": "13200000000000023",
+              "date_last_used": "13200000000000023",
+              "guid": "guid-docker-1",
+              "id": "1019",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 28
+            },
+            {
+              "type": "url",
+              "name": "Docker Dup",
+              "url": "https://docker.com",
+              "date_added": "13200000000000024",
+              "date_last_used": "13200000000000024",
+              "guid": "guid-docker-2",
+              "id": "1020",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 14
+            },
+            {
+              "type": "folder",
+              "name": "tools",
+              "date_added": "13200000000000025",
+              "date_last_used": "0",
+              "date_modified": "13200000000000025",
+              "guid": "guid-tools-sub",
+              "id": "2005",
+              "source": "sync",
+              "children": [
+                {
+                  "type": "url",
+                  "name": "Kubernetes",
+                  "url": "https://kubernetes.io",
+                  "date_added": "13200000000000026",
+                  "date_last_used": "13200000000000026",
+                  "guid": "guid-kubernetes",
+                  "id": "1021",
+                  "show_icon": false,
+                  "source": "sync",
+                  "visit_count": 16
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Empty Top Level",
+          "date_added": "13200000000000045",
+          "date_last_used": "0",
+          "date_modified": "13200000000000045",
+          "guid": "guid-empty-top",
+          "id": "2010",
+          "source": "sync",
+          "children": []
+        }
+      ]
+    },
+    "other": {
+      "type": "folder",
+      "date_added": "13200000000000000",
+      "date_last_used": "0",
+      "date_modified": "13200000000000000",
+      "guid": "guid-other",
+      "id": "2",
+      "source": "sync",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Learning",
+          "date_added": "13200000000000027",
+          "date_last_used": "0",
+          "date_modified": "13200000000000027",
+          "guid": "guid-learning",
+          "id": "2006",
+          "source": "sync",
+          "children": [
+            {
+              "type": "url",
+              "name": "Coursera",
+              "url": "https://coursera.org",
+              "date_added": "13200000000000028",
+              "date_last_used": "13200000000000028",
+              "guid": "guid-coursera-1",
+              "id": "1022",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 12
+            },
+            {
+              "type": "url",
+              "name": "Coursera Dup",
+              "url": "https://coursera.org",
+              "date_added": "13200000000000029",
+              "date_last_used": "13200000000000029",
+              "guid": "guid-coursera-2",
+              "id": "1023",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 6
+            },
+            {
+              "type": "url",
+              "name": "Udemy",
+              "url": "https://udemy.com",
+              "date_added": "13200000000000030",
+              "date_last_used": "13200000000000030",
+              "guid": "guid-udemy-1",
+              "id": "1024",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 8
+            },
+            {
+              "type": "url",
+              "name": "Udemy Dup",
+              "url": "https://udemy.com",
+              "date_added": "13200000000000031",
+              "date_last_used": "13200000000000031",
+              "guid": "guid-udemy-2",
+              "id": "1025",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 4
+            },
+            {
+              "type": "url",
+              "name": "Khan Academy",
+              "url": "https://khanacademy.org",
+              "date_added": "13200000000000032",
+              "date_last_used": "13200000000000032",
+              "guid": "guid-khan-1",
+              "id": "1026",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 10
+            },
+            {
+              "type": "url",
+              "name": "Khan Academy Dup",
+              "url": "https://khanacademy.org",
+              "date_added": "13200000000000033",
+              "date_last_used": "13200000000000033",
+              "guid": "guid-khan-2",
+              "id": "1027",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 5
+            },
+            {
+              "type": "folder",
+              "name": "learning",
+              "date_added": "13200000000000034",
+              "date_last_used": "0",
+              "date_modified": "13200000000000034",
+              "guid": "guid-learning-sub",
+              "id": "2007",
+              "source": "sync",
+              "children": [
+                {
+                  "type": "url",
+                  "name": "edX",
+                  "url": "https://edx.org",
+                  "date_added": "13200000000000035",
+                  "date_last_used": "13200000000000035",
+                  "guid": "guid-edx",
+                  "id": "1028",
+                  "show_icon": false,
+                  "source": "sync",
+                  "visit_count": 7
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Entertainment",
+          "date_added": "13200000000000036",
+          "date_last_used": "0",
+          "date_modified": "13200000000000036",
+          "guid": "guid-entertainment",
+          "id": "2008",
+          "source": "sync",
+          "children": [
+            {
+              "type": "url",
+              "name": "Netflix",
+              "url": "https://netflix.com",
+              "date_added": "13200000000000037",
+              "date_last_used": "13200000000000037",
+              "guid": "guid-netflix-1",
+              "id": "1029",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 45
+            },
+            {
+              "type": "url",
+              "name": "Netflix Dup",
+              "url": "https://netflix.com",
+              "date_added": "13200000000000038",
+              "date_last_used": "13200000000000038",
+              "guid": "guid-netflix-2",
+              "id": "1030",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 22
+            },
+            {
+              "type": "url",
+              "name": "Spotify",
+              "url": "https://spotify.com",
+              "date_added": "13200000000000039",
+              "date_last_used": "13200000000000039",
+              "guid": "guid-spotify-1",
+              "id": "1031",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 38
+            },
+            {
+              "type": "url",
+              "name": "Spotify Dup",
+              "url": "https://spotify.com",
+              "date_added": "13200000000000040",
+              "date_last_used": "13200000000000040",
+              "guid": "guid-spotify-2",
+              "id": "1032",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 19
+            },
+            {
+              "type": "url",
+              "name": "Twitch",
+              "url": "https://twitch.tv",
+              "date_added": "13200000000000041",
+              "date_last_used": "13200000000000041",
+              "guid": "guid-twitch-1",
+              "id": "1033",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 32
+            },
+            {
+              "type": "url",
+              "name": "Twitch Dup",
+              "url": "https://twitch.tv",
+              "date_added": "13200000000000042",
+              "date_last_used": "13200000000000042",
+              "guid": "guid-twitch-2",
+              "id": "1034",
+              "show_icon": false,
+              "source": "sync",
+              "visit_count": 16
+            },
+            {
+              "type": "folder",
+              "name": "entertainment",
+              "date_added": "13200000000000043",
+              "date_last_used": "0",
+              "date_modified": "13200000000000043",
+              "guid": "guid-entertainment-sub",
+              "id": "2009",
+              "source": "sync",
+              "children": [
+                {
+                  "type": "url",
+                  "name": "Hulu",
+                  "url": "https://hulu.com",
+                  "date_added": "13200000000000044",
+                  "date_last_used": "13200000000000044",
+                  "guid": "guid-hulu",
+                  "id": "1035",
+                  "show_icon": false,
+                  "source": "sync",
+                  "visit_count": 9
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Empty Other",
+          "date_added": "13200000000000047",
+          "date_last_used": "0",
+          "date_modified": "13200000000000047",
+          "guid": "guid-empty-other",
+          "id": "2012",
+          "source": "sync",
+          "children": []
+        }
+      ]
+    }
+  },
+  "version": 1
+}

@@ -13,6 +13,8 @@ pub fn build_arena_from_dto(input: &BookmarksFileDto, stats: &mut NormalizeStats
         // duplicate the entire subtree and create unreachable nodes.
         let mut root_shallow = root_node.clone();
         root_shallow.children.clear();
+        // Ensure root containers are treated as folders for processing
+        root_shallow.node_type = "folder".to_string();
 
         let container = alloc_node(
             &mut arena,

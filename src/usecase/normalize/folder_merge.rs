@@ -12,6 +12,7 @@ pub async fn global_folder_merge(
 ) {
     let mut by_name: HashMap<String, Vec<Handle>> = HashMap::new();
 
+    use unicode_normalization::UnicodeNormalization;
     for (h, node) in arena.nodes.iter().enumerate() {
         if node.deleted || node.node_type != "folder" {
             continue;
@@ -22,7 +23,8 @@ pub async fn global_folder_merge(
         let Some(name) = node.name.as_ref() else {
             continue;
         };
-        let norm = name.trim().to_lowercase();
+        // Unicode NFC normalization, trim, lowercase
+        let norm = name.nfc().collect::<String>().trim().to_lowercase();
         by_name.entry(norm).or_default().push(Handle(h));
     }
 
@@ -145,7 +147,19 @@ fn merge_folder_into(arena: &mut Arena, loser: Handle, winner: Handle) {
     if let Some(g) = loser_guid {
         arena.nodes[winner.0].merged_guids.push(g);
     }
-    arena.nodes[winner.0].merged_paths.push(loser_path);
+    arena.nodes[winner.0].merged_paths.push(loser_path.clone());
+
+    // Update x_merge_meta in winner's extra
+    use serde_json::json;
+    let meta = json!({
+        "merged_names": arena.nodes[winner.0].merged_names,
+        "merged_ids": arena.nodes[winner.0].merged_ids,
+        "merged_guids": arena.nodes[winner.0].merged_guids,
+        "merged_paths": arena.nodes[winner.0].merged_paths,
+    });
+    arena.nodes[winner.0]
+        .extra
+        .insert("x_merge_meta".to_string(), meta);
 
     if let Some(parent) = arena.parent[loser.0] {
         arena.nodes[parent.0].children.retain(|h| h.0 != loser.0);

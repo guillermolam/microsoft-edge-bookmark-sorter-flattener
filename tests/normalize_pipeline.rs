@@ -1,3 +1,30 @@
+#[tokio::test]
+async fn global_folder_merge_unicode_canonicalization() {
+    // Two folders with visually identical names but different Unicode forms.
+    use unicode_normalization::UnicodeNormalization;
+    let composed = "Café"; // U+00E9
+    let decomposed = "Cafe\u{0301}"; // U+0065 U+0301
+    assert_ne!(composed, decomposed);
+    assert_eq!(composed.nfc().collect::<String>(), decomposed.nfc().collect::<String>());
+
+    let f1 = folder(composed, Some("1"), None, Some("100"), vec![url("a", Some("1"), "http://example.com/a", None, None, Some("10"))]);
+    let f2 = folder(decomposed, Some("2"), None, Some("200"), vec![url("b", Some("2"), "http://example.com/b", None, None, Some("20"))]);
+    let input = mk_input(vec![("bookmark_bar", root(vec![f1, f2]))]);
+    let canonicalizer = DefaultUrlCanonicalizer;
+    let scc = KosarajuSccDetector;
+    let (out, stats) = normalize_bookmarks(input, &canonicalizer, &scc, None)
+        .await
+        .expect("normalize_bookmarks should succeed");
+    assert_eq!(stats.folders_merged, 1, "Unicode canonical folders should be merged");
+    let cafes = find_folders_named(&out, "Café");
+    assert_eq!(cafes.len(), 1, "Only one canonical Café folder should remain");
+    let cafe = cafes[0];
+    let urls = find_urls_in_folder(cafe);
+    let mut url_vals: Vec<String> = urls.iter().map(|u| u.url.clone().unwrap_or_default()).collect();
+    url_vals.sort();
+    assert_eq!(url_vals, vec!["http://example.com/a", "http://example.com/b"]);
+    // x_merge_meta removed to preserve original JSON structure for Microsoft Edge compatibility
+}
 use microsoft_edge_bookmark_sorter_flattener::infrastructure::scc_kosaraju::KosarajuSccDetector;
 use microsoft_edge_bookmark_sorter_flattener::infrastructure::serde_json_adapter::{
     BookmarkNodeDto, BookmarksFileDto,
@@ -220,28 +247,7 @@ async fn global_folder_merge_outermost_wins_and_records_meta() {
         ]
     );
 
-    let meta = z
-        .extra
-        .get("x_merge_meta")
-        .cloned()
-        .expect("winner folder should have x_merge_meta");
-
-    assert!(
-        meta.get("merged_paths").is_some(),
-        "x_merge_meta should contain merged_paths"
-    );
-    let merged_paths = meta["merged_paths"].as_array().cloned().unwrap_or_default();
-    let merged_paths_str: Vec<String> = merged_paths
-        .iter()
-        .filter_map(|v| v.as_str().map(|s| s.to_string()))
-        .collect();
-
-    assert!(
-        merged_paths_str
-            .iter()
-            .any(|p| p.ends_with("bookmark_bar/0/0")),
-        "merged_paths should include loser folder path"
-    );
+    // x_merge_meta removed to preserve original JSON structure for Microsoft Edge compatibility
 }
 
 #[tokio::test]
@@ -294,15 +300,7 @@ async fn url_dedup_keeps_best_and_records_merged_from() {
         "winner should be the higher visit_count URL"
     );
 
-    let meta = winner
-        .extra
-        .get("x_merge_meta")
-        .cloned()
-        .expect("winner URL should have x_merge_meta");
-
-    let merged_from = meta["merged_from"].as_array().cloned().unwrap_or_default();
-    assert_eq!(merged_from.len(), 1);
-    assert_eq!(merged_from[0]["id"].as_str(), Some("2"));
+    // x_merge_meta removed to preserve original JSON structure for Microsoft Edge compatibility
 }
 
 #[tokio::test]
@@ -388,10 +386,7 @@ async fn preserves_unknown_fields_and_adds_top_level_merge_meta() {
         .expect("normalize_bookmarks should succeed");
 
     assert_eq!(out.extra.get("top"), Some(&json!("keep_top")));
-    assert!(
-        out.extra.contains_key("x_merge_meta"),
-        "normalize should always add top-level x_merge_meta"
-    );
+    // x_merge_meta removed to preserve original JSON structure for Microsoft Edge compatibility
 
     let f_out = find_folders_named(&out, "F");
     assert_eq!(f_out.len(), 1);
@@ -591,12 +586,5 @@ async fn url_dedup_resolves_ties_by_id_when_other_fields_equal() {
     // With equal visit_count, date_last_used and date_added, smallest numeric id should win.
     assert_eq!(winner.id.as_deref(), Some("5"));
 
-    let meta = winner
-        .extra
-        .get("x_merge_meta")
-        .cloned()
-        .expect("winner URL should record merged_from losers");
-    let merged_from = meta["merged_from"].as_array().cloned().unwrap_or_default();
-    assert_eq!(merged_from.len(), 1);
-    assert_eq!(merged_from[0]["id"].as_str(), Some("10"));
+    // x_merge_meta removed to preserve original JSON structure for Microsoft Edge compatibility
 }

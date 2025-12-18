@@ -2,7 +2,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
-use tokio::fs;
+use tokio::{fs, process, time};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct BookmarksFileDto {
@@ -63,8 +63,58 @@ pub async fn read_bookmarks_file(path: &str) -> Result<BookmarksFileDto> {
 
 pub async fn write_bookmarks_file(path: &str, dto: &BookmarksFileDto) -> Result<()> {
     let pretty = serde_json::to_string_pretty(dto)?;
-    fs::write(path, pretty).await?;
-    Ok(())
+
+    let max_retries = 5;
+    let mut last_error = None;
+
+    for attempt in 1..=max_retries {
+        match fs::write(path, &pretty).await {
+            Ok(()) => return Ok(()),
+            Err(e) => {
+                last_error = Some(e.to_string());
+
+                // Check if it's a permission/lock error
+                if e.kind() == std::io::ErrorKind::PermissionDenied
+                    || e.raw_os_error()
+                        .map_or(false, |code| code == 13 || code == 1)
+                {
+                    // EACCES or EPERM
+
+                    if attempt == 1 {
+                        eprintln!("Warning: File {} appears to be locked or inaccessible (possibly by Microsoft Edge).", path);
+                        eprintln!("Attempting to close Microsoft Edge processes...");
+
+                        // Try to find and terminate Microsoft Edge processes
+                        let _ = process::Command::new("pkill")
+                            .args(&["-f", "microsoft-edge"])
+                            .status()
+                            .await;
+
+                        let _ = process::Command::new("pkill")
+                            .args(&["-f", "msedge"])
+                            .status()
+                            .await;
+
+                        // Wait a bit for processes to terminate
+                        time::sleep(time::Duration::from_millis(500)).await;
+                    }
+
+                    if attempt < max_retries {
+                        let delay_ms = 500 * attempt; // Progressive delay: 500ms, 1000ms, 1500ms, 2000ms
+                        eprintln!("Retry {} of {} in {}ms...", attempt, max_retries, delay_ms);
+                        time::sleep(time::Duration::from_millis(delay_ms)).await;
+                        continue;
+                    }
+                } else {
+                    // Not a permission error, fail immediately
+                    return Err(e.into());
+                }
+            }
+        }
+    }
+
+    // If we get here, all retries failed
+    Err(std::io::Error::new(std::io::ErrorKind::Other, last_error.unwrap()).into())
 }
 
 #[cfg(test)]

@@ -39,6 +39,7 @@ fn app_event_to_json(ev: &AppEvent) -> serde_json::Value {
             json!({"type":"folder_pruned","folder_path":folder_path})
         }
         AppEvent::Finished { stats } => json!({"type":"finished","stats":stats}),
+        AppEvent::FolderCounts { counts } => json!({"type":"folder_counts","counts":counts}),
     }
 }
 

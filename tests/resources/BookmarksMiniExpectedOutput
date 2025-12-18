@@ -1,0 +1,323 @@
+{
+  "checksum": "test-checksum",
+  "roots": {
+    "bookmark_bar": {
+      "type": "folder",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Personal",
+          "children": [
+            {
+              "type": "url",
+              "name": "Facebook",
+              "url": "https://facebook.com",
+              "date_added": "13200000000000017",
+              "date_last_used": "13200000000000017",
+              "visit_count": 40,
+              "guid": "guid-facebook",
+              "id": "1014",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Reddit",
+              "url": "https://reddit.com",
+              "date_added": "13200000000000012",
+              "date_last_used": "13200000000000012",
+              "visit_count": 30,
+              "guid": "guid-reddit-1",
+              "id": "1010",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Twitter",
+              "url": "https://twitter.com",
+              "date_added": "13200000000000014",
+              "date_last_used": "13200000000000014",
+              "visit_count": 20,
+              "guid": "guid-twitter-1",
+              "id": "1012",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "YouTube",
+              "url": "https://youtube.com",
+              "date_added": "13200000000000010",
+              "date_last_used": "13200000000000010",
+              "visit_count": 50,
+              "guid": "guid-youtube-1",
+              "id": "1008",
+              "source": "sync",
+              "show_icon": false
+            }
+          ],
+          "date_added": "13200000000000009",
+          "date_modified": "13200000000000009",
+          "date_last_used": "0",
+          "guid": "guid-personal",
+          "id": "2002",
+          "source": "sync"
+        },
+        {
+          "type": "folder",
+          "name": "Tools",
+          "children": [
+            {
+              "type": "url",
+              "name": "VS Code",
+              "url": "https://code.visualstudio.com",
+              "date_added": "13200000000000019",
+              "date_last_used": "13200000000000019",
+              "visit_count": 35,
+              "guid": "guid-vscode-1",
+              "id": "1015",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Docker",
+              "url": "https://docker.com",
+              "date_added": "13200000000000023",
+              "date_last_used": "13200000000000023",
+              "visit_count": 28,
+              "guid": "guid-docker-1",
+              "id": "1019",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Kubernetes",
+              "url": "https://kubernetes.io",
+              "date_added": "13200000000000026",
+              "date_last_used": "13200000000000026",
+              "visit_count": 16,
+              "guid": "guid-kubernetes",
+              "id": "1021",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Postman",
+              "url": "https://postman.com",
+              "date_added": "13200000000000021",
+              "date_last_used": "13200000000000021",
+              "visit_count": 22,
+              "guid": "guid-postman-1",
+              "id": "1017",
+              "source": "sync",
+              "show_icon": false
+            }
+          ],
+          "date_added": "13200000000000018",
+          "date_modified": "13200000000000018",
+          "date_last_used": "0",
+          "guid": "guid-tools",
+          "id": "2004",
+          "source": "sync"
+        },
+        {
+          "type": "folder",
+          "name": "Work",
+          "children": [
+            {
+              "type": "url",
+              "name": "Example",
+              "url": "https://example.com",
+              "date_added": "13200000000000003",
+              "date_last_used": "13200000000000003",
+              "visit_count": 8,
+              "guid": "guid-example-1",
+              "id": "1003",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "GitHub",
+              "url": "https://github.com",
+              "date_added": "13200000000000005",
+              "date_last_used": "13200000000000005",
+              "visit_count": 15,
+              "guid": "guid-github-1",
+              "id": "1005",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Google",
+              "url": "https://google.com",
+              "date_added": "13200000000000001",
+              "date_last_used": "13200000000000001",
+              "visit_count": 10,
+              "guid": "guid-google-1",
+              "id": "1001",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Stack Overflow",
+              "url": "https://stackoverflow.com",
+              "date_added": "13200000000000008",
+              "date_last_used": "13200000000000008",
+              "visit_count": 12,
+              "guid": "guid-stackoverflow",
+              "id": "1007",
+              "source": "sync",
+              "show_icon": false
+            }
+          ],
+          "date_added": "13200000000000000"
+        }
+      ],
+      "date_added": "13200000000000000",
+      "date_modified": "13200000000000000",
+      "date_last_used": "0",
+      "guid": "guid-bookmark-bar",
+      "id": "1",
+      "source": "sync"
+    },
+    "other": {
+      "type": "folder",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Entertainment",
+          "children": [
+            {
+              "type": "url",
+              "name": "Hulu",
+              "url": "https://hulu.com",
+              "date_added": "13200000000000044",
+              "date_last_used": "13200000000000044",
+              "visit_count": 9,
+              "guid": "guid-hulu",
+              "id": "1035",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Netflix",
+              "url": "https://netflix.com",
+              "date_added": "13200000000000037",
+              "date_last_used": "13200000000000037",
+              "visit_count": 45,
+              "guid": "guid-netflix-1",
+              "id": "1029",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Spotify",
+              "url": "https://spotify.com",
+              "date_added": "13200000000000039",
+              "date_last_used": "13200000000000039",
+              "visit_count": 38,
+              "guid": "guid-spotify-1",
+              "id": "1031",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Twitch",
+              "url": "https://twitch.tv",
+              "date_added": "13200000000000041",
+              "date_last_used": "13200000000000041",
+              "visit_count": 32,
+              "guid": "guid-twitch-1",
+              "id": "1033",
+              "source": "sync",
+              "show_icon": false
+            }
+          ],
+          "date_added": "13200000000000036",
+          "date_modified": "13200000000000036",
+          "date_last_used": "0",
+          "guid": "guid-entertainment",
+          "id": "2008",
+          "source": "sync"
+        },
+        {
+          "type": "folder",
+          "name": "Learning",
+          "children": [
+            {
+              "type": "url",
+              "name": "Coursera",
+              "url": "https://coursera.org",
+              "date_added": "13200000000000028",
+              "date_last_used": "13200000000000028",
+              "visit_count": 12,
+              "guid": "guid-coursera-1",
+              "id": "1022",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "edX",
+              "url": "https://edx.org",
+              "date_added": "13200000000000035",
+              "date_last_used": "13200000000000035",
+              "visit_count": 7,
+              "guid": "guid-edx",
+              "id": "1028",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Khan Academy",
+              "url": "https://khanacademy.org",
+              "date_added": "13200000000000032",
+              "date_last_used": "13200000000000032",
+              "visit_count": 10,
+              "guid": "guid-khan-1",
+              "id": "1026",
+              "source": "sync",
+              "show_icon": false
+            },
+            {
+              "type": "url",
+              "name": "Udemy",
+              "url": "https://udemy.com",
+              "date_added": "13200000000000030",
+              "date_last_used": "13200000000000030",
+              "visit_count": 8,
+              "guid": "guid-udemy-1",
+              "id": "1024",
+              "source": "sync",
+              "show_icon": false
+            }
+          ],
+          "date_added": "13200000000000027",
+          "date_modified": "13200000000000027",
+          "date_last_used": "0",
+          "guid": "guid-learning",
+          "id": "2006",
+          "source": "sync"
+        }
+      ],
+      "date_added": "13200000000000000",
+      "date_modified": "13200000000000000",
+      "date_last_used": "0",
+      "guid": "guid-other",
+      "id": "2",
+      "source": "sync"
+    }
+  },
+  "version": 1
+}

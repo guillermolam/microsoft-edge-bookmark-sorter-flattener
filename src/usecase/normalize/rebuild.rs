@@ -1,7 +1,6 @@
 use crate::domain::traits::UrlCanonicalizer;
 use crate::infrastructure::serde_json_adapter::{BookmarkNodeDto, BookmarksFileDto};
 use crate::usecase::normalize::arena::{Arena, Handle};
-use serde_json::json;
 
 pub fn rebuild_dto_from_arena(
     mut base: BookmarksFileDto,
@@ -30,7 +29,7 @@ pub fn rebuild_dto_from_arena(
 
             let extra = std::mem::take(&mut node.extra);
 
-            let mut dto = BookmarkNodeDto {
+            let dto = BookmarkNodeDto {
                 node_type: node.node_type.clone(),
                 name: node.name.clone(),
                 url: node.url.clone(),
@@ -46,7 +45,7 @@ pub fn rebuild_dto_from_arena(
                 extra,
             };
 
-            write_merge_meta(&mut dto, &mut node);
+            // Removed write_merge_meta to preserve original JSON structure
             built[h.0] = Some(dto);
         }
     }
@@ -95,44 +94,4 @@ fn sort_key(n: &BookmarkNodeDto, canonicalizer: &dyn UrlCanonicalizer) -> (u8, S
         ),
         other => (2, other.to_string(), n.name.clone().unwrap_or_default()),
     }
-}
-
-fn write_merge_meta(
-    dto: &mut BookmarkNodeDto,
-    node: &mut crate::usecase::normalize::arena::ArenaNode,
-) {
-    let mut merged_names = std::mem::take(&mut node.merged_names);
-    let mut merged_ids = std::mem::take(&mut node.merged_ids);
-    let mut merged_guids = std::mem::take(&mut node.merged_guids);
-    let mut merged_paths = std::mem::take(&mut node.merged_paths);
-    let merged_from = std::mem::take(&mut node.merged_from);
-
-    merged_names.sort();
-    merged_names.dedup();
-    merged_ids.sort();
-    merged_ids.dedup();
-    merged_guids.sort();
-    merged_guids.dedup();
-    merged_paths.sort();
-    merged_paths.dedup();
-
-    if merged_names.is_empty()
-        && merged_ids.is_empty()
-        && merged_guids.is_empty()
-        && merged_paths.is_empty()
-        && merged_from.is_empty()
-    {
-        return;
-    }
-
-    dto.extra.insert(
-        "x_merge_meta".to_string(),
-        json!({
-            "merged_names": merged_names,
-            "merged_ids": merged_ids,
-            "merged_guids": merged_guids,
-            "merged_paths": merged_paths,
-            "merged_from": merged_from,
-        }),
-    );
 }
