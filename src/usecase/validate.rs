@@ -1,5 +1,7 @@
 use crate::domain::traits::UrlCanonicalizer;
-use crate::infrastructure::schema_validator::{validate_all_bookmark_items, validate_bookmarks_file};
+use crate::infrastructure::schema_validator::{
+    validate_all_bookmark_items, validate_bookmarks_file,
+};
 use crate::infrastructure::serde_json_adapter::BookmarksFileDto;
 use anyhow::{anyhow, Result};
 use serde_json::Value;
@@ -240,12 +242,15 @@ mod tests {
         let dto = BookmarksFileDto {
             roots: BTreeMap::from([(
                 "bookmark_bar".to_string(),
-                mk_folder("bar", vec![BookmarkNodeDto {
-                    node_type: "folder".to_string(),
-                    name: None, // Missing name
-                    children: vec![],
-                    ..BookmarkNodeDto::default()
-                }]),
+                mk_folder(
+                    "bar",
+                    vec![BookmarkNodeDto {
+                        node_type: "folder".to_string(),
+                        name: None, // Missing name
+                        children: vec![],
+                        ..BookmarkNodeDto::default()
+                    }],
+                ),
             )]),
             ..BookmarksFileDto::default()
         };
@@ -265,11 +270,14 @@ mod tests {
         let dto = BookmarksFileDto {
             roots: BTreeMap::from([(
                 "bookmark_bar".to_string(),
-                mk_folder("bar", vec![BookmarkNodeDto {
-                    node_type: "url".to_string(),
-                    url: None, // Missing URL
-                    ..BookmarkNodeDto::default()
-                }]),
+                mk_folder(
+                    "bar",
+                    vec![BookmarkNodeDto {
+                        node_type: "url".to_string(),
+                        url: None, // Missing URL
+                        ..BookmarkNodeDto::default()
+                    }],
+                ),
             )]),
             ..BookmarksFileDto::default()
         };
@@ -277,7 +285,8 @@ mod tests {
         let canonicalizer = DefaultUrlCanonicalizer;
         // URLs without URLs are allowed in the schema, but validation doesn't check this
         // The validation focuses on business rules, not schema completeness
-        validate_bookmarks(&dto, &canonicalizer).expect("URL without url field should be valid per current validation");
+        validate_bookmarks(&dto, &canonicalizer)
+            .expect("URL without url field should be valid per current validation");
     }
 
     #[test]

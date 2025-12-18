@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "json-schema:///url_schema.json",
   "title": "Microsoft Edge Bookmark URL Item",
   "description": "Schema for URL bookmark items in Microsoft Edge bookmarks",
   "type": "object",
-  "required": ["type", "name", "url", "date_added", "guid", "id"],
   "properties": {
     "type": {
       "type": "string",
@@ -53,5 +53,5 @@
       "description": "Number of times the bookmark has been visited"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

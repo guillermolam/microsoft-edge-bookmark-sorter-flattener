@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "json-schema:///bookmarks_schema.json",
   "title": "Microsoft Edge Bookmarks File",
   "description": "Schema for Microsoft Edge bookmarks JSON file",
   "type": "object",
-  "required": ["checksum", "roots", "version"],
   "properties": {
     "checksum": {
       "type": "string",
@@ -12,23 +12,7 @@
     "roots": {
       "type": "object",
       "description": "Root bookmark containers",
-      "properties": {
-        "bookmark_bar": {
-          "$ref": "folder_schema.json",
-          "description": "Bookmarks bar folder"
-        },
-        "other": {
-          "$ref": "folder_schema.json",
-          "description": "Other bookmarks folder"
-        },
-        "synced": {
-          "$ref": "folder_schema.json",
-          "description": "Synced bookmarks folder"
-        }
-      },
-      "additionalProperties": {
-        "$ref": "folder_schema.json"
-      }
+      "additionalProperties": true
     },
     "version": {
       "type": "integer",
@@ -36,5 +20,5 @@
       "description": "Bookmarks file format version"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

@@ -114,6 +114,20 @@ async fn i_run_bookmarks_validate_on_the_input_file(world: &mut TestWorld) {
     world.last_cmd = Some(out);
 }
 
+#[when("I run bookmarks validate on the output file")]
+async fn i_run_bookmarks_validate_on_the_output_file(world: &mut TestWorld) {
+    let output_path = world.output_path.as_ref().expect("output");
+
+    let out = run_cmd(vec![
+        "bookmarks".to_string(),
+        "validate".to_string(),
+        "--in".to_string(),
+        output_path.to_string_lossy().into_owned(),
+    ])
+    .await;
+    world.last_cmd = Some(out);
+}
+
 #[when("I run bookmarks normalize with dry run on the input file")]
 async fn i_run_bookmarks_normalize_with_dry_run_on_the_input_file(world: &mut TestWorld) {
     let input_path = world.input_path.as_ref().expect("input");

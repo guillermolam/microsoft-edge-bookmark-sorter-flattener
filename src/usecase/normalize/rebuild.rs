@@ -41,7 +41,10 @@ pub fn rebuild_dto_from_arena(
                 id: node.id.clone(),
                 source: node.source.clone(),
                 show_icon: node.show_icon,
-                extra: BTreeMap::new(), // No extra fields in output to preserve Microsoft Edge compatibility
+                // Preserve unknown extra fields from input nodes, but we will strip
+                // internal merge metadata (e.g. `x_merge_meta`) from the final
+                // output to remain Microsoft Edge compatible.
+                extra: node.extra.clone(),
             };
 
             // Removed write_merge_meta to preserve original JSON structure
@@ -54,6 +57,9 @@ pub fn rebuild_dto_from_arena(
             base.roots.insert(root_key.clone(), root_node);
         }
     }
+
+    // Remove any internal merge metadata added during processing before returning.
+    base.extra.remove("x_merge_meta");
 
     base
 }

@@ -52,7 +52,6 @@ pub async fn run_with_args(args: &[String]) -> Result<()> {
             let canonicalizer = DefaultUrlCanonicalizer;
             let scc = KosarajuSccDetector;
 
-
             let (out, stats) = normalize_bookmarks(dto, &canonicalizer, &scc, Some(tx)).await?;
 
             if !dry_run {
@@ -291,11 +290,13 @@ mod tests {
                 output,
                 emit_events,
                 backup,
+                dry_run,
             } => {
                 assert_eq!(input, "a.json");
                 assert_eq!(output, "b.json");
                 assert!(emit_events);
                 assert!(!backup);
+                assert!(!dry_run);
             }
             _ => panic!("expected normalize"),
         }

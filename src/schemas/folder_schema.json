@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "json-schema:///folder_schema.json",
   "title": "Microsoft Edge Bookmark Folder Item",
   "description": "Schema for folder bookmark items in Microsoft Edge bookmarks",
   "type": "object",
-  "required": ["type", "name", "date_added", "guid", "id", "children"],
   "properties": {
     "type": {
       "type": "string",
@@ -46,13 +46,10 @@
     "children": {
       "type": "array",
       "items": {
-        "oneOf": [
-          { "$ref": "url_schema.json" },
-          { "$ref": "folder_schema.json" }
-        ]
+        "type": "object"
       },
       "description": "Child items (folders or URLs)"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

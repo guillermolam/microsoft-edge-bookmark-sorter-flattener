@@ -138,16 +138,21 @@ fn merge_folder_into(arena: &mut Arena, loser: Handle, winner: Handle) {
 
     // Merge attributes - keep winner's attributes but accumulate visit counts
     if let Some(loser_visit_count) = arena.nodes[loser.0].visit_count {
-        arena.nodes[winner.0].visit_count = Some(
-            arena.nodes[winner.0].visit_count.unwrap_or(0) + loser_visit_count
-        );
+        arena.nodes[winner.0].visit_count =
+            Some(arena.nodes[winner.0].visit_count.unwrap_or(0) + loser_visit_count);
     }
 
     // Update date_modified to the most recent
-    let winner_date = arena.nodes[winner.0].date_modified.as_deref()
-        .and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
-    let loser_date = arena.nodes[loser.0].date_modified.as_deref()
-        .and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+    let winner_date = arena.nodes[winner.0]
+        .date_modified
+        .as_deref()
+        .and_then(|s| s.parse::<u64>().ok())
+        .unwrap_or(0);
+    let loser_date = arena.nodes[loser.0]
+        .date_modified
+        .as_deref()
+        .and_then(|s| s.parse::<u64>().ok())
+        .unwrap_or(0);
     if loser_date > winner_date {
         arena.nodes[winner.0].date_modified = arena.nodes[loser.0].date_modified.clone();
     }
