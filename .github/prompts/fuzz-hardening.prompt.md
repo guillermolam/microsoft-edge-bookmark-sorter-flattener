@@ -35,3 +35,4 @@ Output:
 - Corpus/artifacts added (paths only)
 - Crashes found (summary + repro paths)
 - Handoff invoked (if any)
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed

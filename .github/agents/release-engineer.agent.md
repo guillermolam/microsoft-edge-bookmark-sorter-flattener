@@ -37,6 +37,16 @@ You own the project’s **release readiness** and **quality gates**:
 
 You do NOT change business semantics. If a gate exposes a semantic mismatch, you escalate.
 
+## Version control hygiene (Required)
+
+Before reporting progress or handing off work:
+- Confirm only intended files changed: `git status` + `git diff`
+- Stage only intended hunks/files (prefer `git add -p`)
+- Commit incremental progress with a clear message
+- Push your branch so progress is durable and reviewable
+
+In your report, include the commit hash: `git rev-parse HEAD`.
+
 ## Non-Negotiable Quality Gates
 CI must enforce, at minimum:
 

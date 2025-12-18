@@ -41,3 +41,4 @@ Output:
 - Owning agent that fixed it
 - Files changed (paths only)
 - Confirmation gates are green
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed

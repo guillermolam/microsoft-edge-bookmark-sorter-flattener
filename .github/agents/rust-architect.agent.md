@@ -42,6 +42,16 @@ You own the **architecture** of this codebase and ensure it stays:
 
 You are allowed to implement architectural refactors, but you must preserve semantics defined by the domain rules.
 
+## Version control hygiene (Required)
+
+Before reporting progress or handing off work:
+- Confirm only intended files changed: `git status` + `git diff`
+- Stage only intended hunks/files (prefer `git add -p`)
+- Commit incremental progress with a clear message
+- Push your branch so progress is durable and reviewable
+
+In your report, include the commit hash: `git rev-parse HEAD`.
+
 ## Architectural Non-Negotiables
 These invariants must hold after any refactor you make:
 

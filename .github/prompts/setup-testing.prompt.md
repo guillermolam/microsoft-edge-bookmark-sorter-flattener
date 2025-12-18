@@ -23,6 +23,7 @@ Deliverables:
 3) Print in CI logs:
    - current coverage %
    - top 5–10 lowest-covered files/modules when failing (best effort)
+4) Commit and push the changes so progress is durable and reviewable
 
 Constraints:
 - Do not change domain semantics.
@@ -31,3 +32,6 @@ Constraints:
 Once tooling is in place:
 - Run the canonical coverage command and report the baseline coverage % and lowest-covered modules.
 - If baseline <98%, trigger your handoff to cargo-test-agent with the ranked target list.
+
+Output (add to the report):
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed

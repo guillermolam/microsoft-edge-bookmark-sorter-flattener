@@ -28,3 +28,4 @@ Output:
 - Updated invariants (bullets)
 - Files changed (paths only)
 - Which agent should run next and why
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed

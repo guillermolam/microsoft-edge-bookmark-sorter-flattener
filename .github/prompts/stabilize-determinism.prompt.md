@@ -26,3 +26,4 @@ Output:
 - Determinism fixes applied (paths only)
 - Tests added (paths only)
 - Confirmation: 2 consecutive runs match
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed

@@ -17,6 +17,16 @@ Keeps the app **fast and memory-efficient** as data scales.
 - No semantic changes
 - No async redesign
 
+### Version control hygiene (Required)
+
+Before reporting progress or handing off work:
+- Confirm only intended files changed: `git status` + `git diff`
+- Stage only intended hunks/files (prefer `git add -p`)
+- Commit incremental progress with a clear message
+- Push your branch so progress is durable and reviewable
+
+In your report, include the commit hash: `git rev-parse HEAD`.
+
 ### Ideal inputs
 - SCC + merge code
 - Benchmarks
