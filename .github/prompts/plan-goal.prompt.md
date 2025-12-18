@@ -4,22 +4,26 @@ name: plan-goal
 argument-hint: "task=<what are we trying to accomplish?>"
 agent: "Plan"
 tools:
-   - agent
-   - read/problems
-   - search/changes
+  - agent
+  - read/problems
+  - search/changes
 ---
+
 # Prompt files (VS Code) — usage + best practices
 
 This file is a VS Code Copilot **prompt file** (`.prompt.md`) stored in `.github/prompts/` so it can be run on-demand from Chat.
 
 How to run:
+
 - In VS Code Chat, type `/plan-goal task="<your task>"` (or type `#prompt:` and pick this file).
 
 Command examples (copy/paste):
+
 - `/plan-goal task="Make Trunk pass: ignore trailing whitespace, disable markdownlint, keep diffs minimal"`
 - `/plan-goal task="Add deterministic tests for SCC cycle handling and verify byte-stable output"`
 
 Best practices (apply them when generating the plan):
+
 - Be explicit about the goal and the expected output format (a numbered todo list with clear verification steps).
 - Prefer referencing existing workspace files and instructions over duplicating them (link them).
 - Use concrete commands for verification (build/test/lint) and state what success looks like.
@@ -27,25 +31,30 @@ Best practices (apply them when generating the plan):
 - Include a final “commit + push” step so progress is durable and reviewable.
 
 Key repo guidance (reference, don’t restate):
+
 - Architecture + constraints: [../copilot-instructions.md](../copilot-instructions.md)
 - High-level rationale + commands: [../../README.md](../../README.md)
 
 Input:
+
 - Task: ${input:task:What should the plan accomplish?}
 
 Output format (required):
+
 - A short assumptions block (1-3 bullets)
 - A numbered plan with 3–8 steps
 - Each step includes: what to do, where (file paths/symbols), and how to verify (exact commands)
 - Include a final step to confirm `git status`, then commit and push the changes.
 
 When executing in Agent mode:
+
 - Use #tool:search/changes to confirm only intended files changed.
 - Use #tool:read/problems after build/test to capture compiler/test failures.
 
 # Commands (copy/paste)
 
 Repo + quality gates:
+
 - `cd ${workspaceFolder}`
 - `cargo build`
 - `cargo test`
@@ -53,14 +62,17 @@ Repo + quality gates:
 - `cargo clippy --all-targets --all-features -- -D warnings`
 
 Optional coverage gate (if enabled for the task):
+
 - `cargo install cargo-tarpaulin`
 - `cargo tarpaulin --workspace --all-features --out Json --output-dir target/tarpaulin --fail-under 98`
 
 CLI (examples):
+
 - Normalize: `cargo run -- bookmarks normalize --in <input.json> --out <output.json> [--emit-events] [--backup]`
 - Validate: `cargo run -- bookmarks validate --in <input.json>`
 
 Optional real-file end-to-end (WSL, safe):
+
 - `IN='/mnt/c/Users/<you>/AppData/Local/Microsoft/Edge/User Data/Default/Bookmarks'`
 - `ts=$(date +%Y%m%d-%H%M%S)`
 - `cp -a "$IN" "$IN.bak.$ts"`
@@ -69,6 +81,7 @@ Optional real-file end-to-end (WSL, safe):
 - `cargo run -- bookmarks validate --in "$OUT"`
 
 Optional determinism check (same input => identical output bytes):
+
 - `OUT1="$IN.cleaned.$ts.1.json"; OUT2="$IN.cleaned.$ts.2.json"`
 - `cargo run -- bookmarks normalize --in "$IN" --out "$OUT1"`
 - `cargo run -- bookmarks normalize --in "$IN" --out "$OUT2"`
@@ -77,8 +90,8 @@ Optional determinism check (same input => identical output bytes):
 # Ultimate Target Artifact:
 
 - The real Microsoft Edge bookmarks file must be transformed and validated:
-   Windows: `C:\Users\<you>\AppData\Local\Microsoft\Edge\User Data\Default\Bookmarks`
-   WSL: `/mnt/c/Users/<you>/AppData/Local/Microsoft/Edge/User Data/Default/Bookmarks`
+  Windows: `C:\Users\<you>\AppData\Local\Microsoft\Edge\User Data\Default\Bookmarks`
+  WSL: `/mnt/c/Users/<you>/AppData/Local/Microsoft/Edge/User Data/Default/Bookmarks`
 
 # Definition of Done (must all be true):
 
