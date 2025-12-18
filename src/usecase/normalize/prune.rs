@@ -107,7 +107,9 @@ mod tests {
             ..ArenaNode::default()
         });
         arena.parent.push(None);
-        arena.root_container.insert("bookmark_bar".to_string(), Handle(0));
+        arena
+            .root_container
+            .insert("bookmark_bar".to_string(), Handle(0));
 
         let mut stats = NormalizeStats::default();
         prune_empty_folders(&mut arena, &None, &mut stats).await;
@@ -128,7 +130,9 @@ mod tests {
             ..ArenaNode::default()
         });
         arena.parent.push(None);
-        arena.root_container.insert("bookmark_bar".to_string(), Handle(0));
+        arena
+            .root_container
+            .insert("bookmark_bar".to_string(), Handle(0));
 
         arena.nodes.push(ArenaNode {
             node_type: "folder".to_string(),
@@ -169,7 +173,9 @@ mod tests {
             ..ArenaNode::default()
         });
         arena.parent.push(None);
-        arena.root_container.insert("bookmark_bar".to_string(), Handle(0));
+        arena
+            .root_container
+            .insert("bookmark_bar".to_string(), Handle(0));
 
         arena.nodes.push(ArenaNode {
             node_type: "folder".to_string(),

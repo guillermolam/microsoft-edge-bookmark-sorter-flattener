@@ -62,10 +62,7 @@ mod tests {
 
         assert_eq!(node.normalized_folder_name().as_deref(), Some("foo bar"));
 
-        let node = BookmarkNode {
-            name: None,
-            ..node
-        };
+        let node = BookmarkNode { name: None, ..node };
         assert_eq!(node.normalized_folder_name(), None);
     }
 

@@ -1,6 +1,6 @@
 use crate::infrastructure::event_ndjson::spawn_ndjson_printer;
-use crate::infrastructure::serde_json_adapter::{read_bookmarks_file, write_bookmarks_file};
 use crate::infrastructure::scc_kosaraju::KosarajuSccDetector;
+use crate::infrastructure::serde_json_adapter::{read_bookmarks_file, write_bookmarks_file};
 use crate::infrastructure::url_canonicalizer::DefaultUrlCanonicalizer;
 use crate::usecase::event::AppEvent;
 use crate::usecase::normalize::normalize_bookmarks;
@@ -94,149 +94,132 @@ enum Cli {
         input: String,
         output: String,
         emit_events: bool,
+        backup: bool,
+    },
+    BookmarksValidate {
+        input: String,
     },
 }
 
 impl Cli {
     fn parse(args: &[String]) -> Result<Self> {
         // Expected:
-        // <bin> bookmarks normalize --in input.json --out output.json [--emit-events]
+        // <bin> bookmarks normalize --in/--input <input.json> --out/--output <output.json> [--emit-events] [--backup]
+        // <bin> bookmarks validate --in/--input <input.json>
         if args.len() < 3 {
             return Err(anyhow!(usage()));
         }
 
-        if args[1] != "bookmarks" || args[2] != "normalize" {
+        if args[1] != "bookmarks" {
             return Err(anyhow!(usage()));
         }
 
+        match args[2].as_str() {
+            "normalize" => Self::parse_normalize(args),
+            "validate" => Self::parse_validate(args),
+            "-h" | "--help" => Err(anyhow!(usage())),
+            _ => Err(anyhow!(usage())),
+        }
+    }
+
+    fn parse_normalize(args: &[String]) -> Result<Self> {
         let mut input: Option<String> = None;
         let mut output: Option<String> = None;
         let mut emit_events = false;
+        let mut backup = false;
 
         let mut i = 3;
         while i < args.len() {
             match args[i].as_str() {
-                "--in" => {
+                "--in" | "--input" => {
                     i += 1;
                     input = args.get(i).cloned();
                 }
-                    backup: bool,
-                "--out" => {
-                BookmarksValidate {
-                    input: String,
-                },
+                "--out" | "--output" => {
                     i += 1;
                     output = args.get(i).cloned();
                 }
                 "--emit-events" => {
                     emit_events = true;
-                    // <bin> bookmarks normalize --in/--input input.json --out/--output output.json [--emit-events] [--backup]
-                    // <bin> bookmarks validate --in/--input input.json
+                }
+                "--backup" => {
+                    backup = true;
+                }
                 "-h" | "--help" => return Err(anyhow!(usage())),
                 other => return Err(anyhow!(format!("unknown arg: {other}\n\n{}", usage()))),
             }
             i += 1;
-                    if args[1] != "bookmarks" {
+        }
 
-        let input = input.ok_or_else(|| anyhow!(format!("missing --in\n\n{}", usage())))?;
+        let input = input.ok_or_else(|| anyhow!(format!("missing --in/--input\n\n{}", usage())))?;
+        let output =
+            output.ok_or_else(|| anyhow!(format!("missing --out/--output\n\n{}", usage())))?;
 
-                    match args[2].as_str() {
-                        "normalize" => Self::parse_normalize(args),
-                        "validate" => Self::parse_validate(args),
-                        _ => Err(anyhow!(usage())),
-                    }
+        Ok(Cli::BookmarksNormalize {
+            input,
+            output,
+            emit_events,
+            backup,
+        })
+    }
+
+    fn parse_validate(args: &[String]) -> Result<Self> {
+        let mut input: Option<String> = None;
+
+        let mut i = 3;
+        while i < args.len() {
+            match args[i].as_str() {
+                "--in" | "--input" => {
+                    i += 1;
+                    input = args.get(i).cloned();
                 }
+                "-h" | "--help" => return Err(anyhow!(usage())),
+                other => return Err(anyhow!(format!("unknown arg: {other}\n\n{}", usage()))),
+            }
+            i += 1;
+        }
 
-                fn parse_normalize(args: &[String]) -> Result<Self> {
-                    let mut input: Option<String> = None;
-                    let mut output: Option<String> = None;
-                    let mut emit_events = false;
-                    let mut backup = false;
+        let input = input.ok_or_else(|| anyhow!(format!("missing --in/--input\n\n{}", usage())))?;
 
-                    let mut i = 3;
-                    while i < args.len() {
-                        match args[i].as_str() {
-                            "--in" | "--input" => {
-                                i += 1;
-                                input = args.get(i).cloned();
-                            }
-                            "--out" | "--output" => {
-                                i += 1;
-                                output = args.get(i).cloned();
-                            }
-                            "--emit-events" => {
-                                emit_events = true;
-                            }
-                            "--backup" => {
-                                backup = true;
-                            }
-                            "-h" | "--help" => return Err(anyhow!(usage())),
-                            other => return Err(anyhow!(format!("unknown arg: {other}\n\n{}", usage()))),
-                        }
-                        i += 1;
-                    }
+        Ok(Cli::BookmarksValidate { input })
+    }
+}
 
-                    let input = input.ok_or_else(|| anyhow!(format!("missing --in/--input\n\n{}", usage())))?;
-                    let output = output.ok_or_else(|| anyhow!(format!("missing --out/--output\n\n{}", usage())))?;
+fn usage() -> &'static str {
+    "Usage:\n  bookmarks normalize --in/--input <input.json> --out/--output <output.json> [--emit-events] [--backup]\n  bookmarks validate --in/--input <input.json>\n\nEvents:\n  If --emit-events is set, NDJSON events are written to stdout; summary goes to stderr.\n\nSafety:\n  If output path equals input path, --backup is required and a timestamped backup is created in the same directory."
+}
 
-                    Ok(Cli::BookmarksNormalize {
-                        input,
-                        output,
-                        emit_events,
-                        backup,
-                    })
-                }
+fn is_same_file(a: &str, b: &str) -> bool {
+    let a = std::fs::canonicalize(a).unwrap_or_else(|_| PathBuf::from(a));
+    let b = std::fs::canonicalize(b).unwrap_or_else(|_| PathBuf::from(b));
+    a == b
+}
 
-                fn parse_validate(args: &[String]) -> Result<Self> {
-                    let mut input: Option<String> = None;
+fn create_timestamped_backup(input: &Path) -> Result<PathBuf> {
+    let file_name = input
+        .file_name()
+        .and_then(|s| s.to_str())
+        .ok_or_else(|| anyhow!("input file name is not valid UTF-8"))?;
 
-                    let mut i = 3;
-                    while i < args.len() {
-                        match args[i].as_str() {
-                            "--in" | "--input" => {
-                                i += 1;
-                                input = args.get(i).cloned();
-                            }
-                            "-h" | "--help" => return Err(anyhow!(usage())),
-                            other => return Err(anyhow!(format!("unknown arg: {other}\n\n{}", usage()))),
-                        }
-                        i += 1;
-                    }
+    let ts = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis();
 
-                    let input = input.ok_or_else(|| anyhow!(format!("missing --in/--input\n\n{}", usage())))?;
+    let backup_name = format!("{file_name}.bak.{ts}");
+    let backup_path = input.with_file_name(backup_name);
+    std::fs::copy(input, &backup_path).with_context(|| format!("copying {file_name} to backup"))?;
+    Ok(backup_path)
+}
 
-                    Ok(Cli::BookmarksValidate { input })
-        let output = output.ok_or_else(|| anyhow!(format!("missing --out\n\n{}", usage())))?;
-        ];
-        let err = Cli::parse(&args).unwrap_err().to_string();
-        assert!(err.contains("Usage"));
-                "Usage:\n  bookmarks normalize --in/--input <input.json> --out/--output <output.json> [--emit-events] [--backup]\n  bookmarks validate --in/--input <input.json>\n\nEvents:\n  If --emit-events is set, NDJSON events are written to stdout; summary goes to stderr.\n\nSafety:\n  If output path equals input path, --backup is required and a timestamped backup is created in the same directory."
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::infrastructure::serde_json_adapter::{BookmarkNodeDto, BookmarksFileDto};
+    use std::collections::BTreeMap;
+    use tempfile::tempdir;
 
     #[test]
-
-            fn is_same_file(a: &str, b: &str) -> bool {
-                let a = std::fs::canonicalize(a).unwrap_or_else(|_| PathBuf::from(a));
-                let b = std::fs::canonicalize(b).unwrap_or_else(|_| PathBuf::from(b));
-                a == b
-            }
-
-            fn create_timestamped_backup(input: &Path) -> Result<PathBuf> {
-                let file_name = input
-                    .file_name()
-                    .and_then(|s| s.to_str())
-                    .ok_or_else(|| anyhow!("input file name is not valid UTF-8"))?;
-
-                let ts = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap_or_default()
-                    .as_millis();
-
-                let backup_name = format!("{file_name}.bak.{ts}");
-                let backup_path = input.with_file_name(backup_name);
-                std::fs::copy(input, &backup_path)
-                    .with_context(|| format!("copying {file_name} to backup"))?;
-                Ok(backup_path)
-            }
     fn parse_rejects_unknown_arg() {
         let args = vec![
             "bin".to_string(),
@@ -337,16 +320,18 @@ impl Cli {
         let input_path = dir.path().join("Bookmarks.json");
         let output_path = dir.path().join("Bookmarks.out.json");
 
-        let mut dto = BookmarksFileDto::default();
-        dto.roots = BTreeMap::from([(
-            "bookmark_bar".to_string(),
-            BookmarkNodeDto {
-                node_type: "folder".to_string(),
-                name: Some("bar".to_string()),
-                children: vec![],
-                ..BookmarkNodeDto::default()
-            },
-        )]);
+        let dto = BookmarksFileDto {
+            roots: BTreeMap::from([(
+                "bookmark_bar".to_string(),
+                BookmarkNodeDto {
+                    node_type: "folder".to_string(),
+                    name: Some("bar".to_string()),
+                    children: vec![],
+                    ..BookmarkNodeDto::default()
+                },
+            )]),
+            ..BookmarksFileDto::default()
+        };
 
         std::fs::write(
             &input_path,
@@ -378,16 +363,18 @@ impl Cli {
         let input_path = dir.path().join("Bookmarks.json");
         let output_path = dir.path().join("Bookmarks.out.json");
 
-        let mut dto = BookmarksFileDto::default();
-        dto.roots = BTreeMap::from([(
-            "bookmark_bar".to_string(),
-            BookmarkNodeDto {
-                node_type: "folder".to_string(),
-                name: Some("bar".to_string()),
-                children: vec![],
-                ..BookmarkNodeDto::default()
-            },
-        )]);
+        let dto = BookmarksFileDto {
+            roots: BTreeMap::from([(
+                "bookmark_bar".to_string(),
+                BookmarkNodeDto {
+                    node_type: "folder".to_string(),
+                    name: Some("bar".to_string()),
+                    children: vec![],
+                    ..BookmarkNodeDto::default()
+                },
+            )]),
+            ..BookmarksFileDto::default()
+        };
 
         std::fs::write(
             &input_path,
@@ -421,20 +408,22 @@ impl Cli {
         let dir = tempdir().expect("tempdir");
         let input_path = dir.path().join("Bookmarks.json");
 
-        let mut dto = BookmarksFileDto::default();
-        dto.roots = BTreeMap::from([(
-            "bookmark_bar".to_string(),
-            BookmarkNodeDto {
-                node_type: "folder".to_string(),
-                name: Some("bar".to_string()),
-                children: vec![BookmarkNodeDto {
-                    node_type: "url".to_string(),
-                    url: Some("https://example.com".to_string()),
+        let dto = BookmarksFileDto {
+            roots: BTreeMap::from([(
+                "bookmark_bar".to_string(),
+                BookmarkNodeDto {
+                    node_type: "folder".to_string(),
+                    name: Some("bar".to_string()),
+                    children: vec![BookmarkNodeDto {
+                        node_type: "url".to_string(),
+                        url: Some("https://example.com".to_string()),
+                        ..BookmarkNodeDto::default()
+                    }],
                     ..BookmarkNodeDto::default()
-                }],
-                ..BookmarkNodeDto::default()
-            },
-        )]);
+                },
+            )]),
+            ..BookmarksFileDto::default()
+        };
 
         std::fs::write(
             &input_path,
@@ -458,16 +447,18 @@ impl Cli {
         let dir = tempdir().expect("tempdir");
         let input_path = dir.path().join("Bookmarks.json");
 
-        let mut dto = BookmarksFileDto::default();
-        dto.roots = BTreeMap::from([(
-            "bookmark_bar".to_string(),
-            BookmarkNodeDto {
-                node_type: "folder".to_string(),
-                name: Some("bar".to_string()),
-                children: vec![],
-                ..BookmarkNodeDto::default()
-            },
-        )]);
+        let dto = BookmarksFileDto {
+            roots: BTreeMap::from([(
+                "bookmark_bar".to_string(),
+                BookmarkNodeDto {
+                    node_type: "folder".to_string(),
+                    name: Some("bar".to_string()),
+                    children: vec![],
+                    ..BookmarkNodeDto::default()
+                },
+            )]),
+            ..BookmarksFileDto::default()
+        };
 
         std::fs::write(
             &input_path,
@@ -494,16 +485,18 @@ impl Cli {
         let dir = tempdir().expect("tempdir");
         let input_path = dir.path().join("Bookmarks.json");
 
-        let mut dto = BookmarksFileDto::default();
-        dto.roots = BTreeMap::from([(
-            "bookmark_bar".to_string(),
-            BookmarkNodeDto {
-                node_type: "folder".to_string(),
-                name: Some("bar".to_string()),
-                children: vec![],
-                ..BookmarkNodeDto::default()
-            },
-        )]);
+        let dto = BookmarksFileDto {
+            roots: BTreeMap::from([(
+                "bookmark_bar".to_string(),
+                BookmarkNodeDto {
+                    node_type: "folder".to_string(),
+                    name: Some("bar".to_string()),
+                    children: vec![],
+                    ..BookmarkNodeDto::default()
+                },
+            )]),
+            ..BookmarksFileDto::default()
+        };
 
         std::fs::write(
             &input_path,

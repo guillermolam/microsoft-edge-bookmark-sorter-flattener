@@ -3,7 +3,10 @@ use crate::infrastructure::serde_json_adapter::BookmarksFileDto;
 use anyhow::{anyhow, Result};
 use std::collections::{BTreeMap, BTreeSet};
 
-pub fn validate_bookmarks(dto: &BookmarksFileDto, canonicalizer: &dyn UrlCanonicalizer) -> Result<()> {
+pub fn validate_bookmarks(
+    dto: &BookmarksFileDto,
+    canonicalizer: &dyn UrlCanonicalizer,
+) -> Result<()> {
     // Iterative traversal (no recursion).
     // We treat the document as a forest of folders rooted at `dto.roots`.
 
@@ -11,8 +14,11 @@ pub fn validate_bookmarks(dto: &BookmarksFileDto, canonicalizer: &dyn UrlCanonic
     let mut global_folder_owner: BTreeMap<String, String> = BTreeMap::new();
 
     // Stack holds (path, node, is_root_container).
-    let mut stack: Vec<(String, &crate::infrastructure::serde_json_adapter::BookmarkNodeDto, bool)> =
-        Vec::new();
+    let mut stack: Vec<(
+        String,
+        &crate::infrastructure::serde_json_adapter::BookmarkNodeDto,
+        bool,
+    )> = Vec::new();
 
     for (root_key, root) in dto.roots.iter() {
         stack.push((format!("/{root_key}"), root, true));
@@ -49,9 +55,7 @@ pub fn validate_bookmarks(dto: &BookmarksFileDto, canonicalizer: &dyn UrlCanonic
                 if let Some(n) = child.name.as_ref() {
                     let norm = n.trim().to_lowercase();
                     if !seen_child_folders.insert(norm.clone()) {
-                        return Err(anyhow!(
-                            "duplicate subfolder name under {path}: {norm}"
-                        ));
+                        return Err(anyhow!("duplicate subfolder name under {path}: {norm}"));
                     }
                 }
             }
@@ -60,9 +64,7 @@ pub fn validate_bookmarks(dto: &BookmarksFileDto, canonicalizer: &dyn UrlCanonic
                 if let Some(url) = child.url.as_ref() {
                     let canon = canonicalizer.canonicalize(url);
                     if !seen_urls.insert(canon.clone()) {
-                        return Err(anyhow!(
-                            "duplicate URL under {path}: {canon}"
-                        ));
+                        return Err(anyhow!("duplicate URL under {path}: {canon}"));
                     }
                 }
             }
@@ -137,7 +139,9 @@ mod tests {
         };
 
         let canonicalizer = DefaultUrlCanonicalizer;
-        let err = validate_bookmarks(&dto, &canonicalizer).unwrap_err().to_string();
+        let err = validate_bookmarks(&dto, &canonicalizer)
+            .unwrap_err()
+            .to_string();
         assert!(err.contains("globally unique"));
     }
 
@@ -158,7 +162,9 @@ mod tests {
         };
 
         let canonicalizer = DefaultUrlCanonicalizer;
-        let err = validate_bookmarks(&dto, &canonicalizer).unwrap_err().to_string();
+        let err = validate_bookmarks(&dto, &canonicalizer)
+            .unwrap_err()
+            .to_string();
         assert!(err.contains("duplicate subfolder"));
     }
 
@@ -173,7 +179,9 @@ mod tests {
         };
 
         let canonicalizer = DefaultUrlCanonicalizer;
-        let err = validate_bookmarks(&dto, &canonicalizer).unwrap_err().to_string();
+        let err = validate_bookmarks(&dto, &canonicalizer)
+            .unwrap_err()
+            .to_string();
         assert!(err.contains("empty folder"));
     }
 
@@ -194,7 +202,9 @@ mod tests {
         };
 
         let canonicalizer = DefaultUrlCanonicalizer;
-        let err = validate_bookmarks(&dto, &canonicalizer).unwrap_err().to_string();
+        let err = validate_bookmarks(&dto, &canonicalizer)
+            .unwrap_err()
+            .to_string();
         assert!(err.contains("duplicate URL"));
     }
 }

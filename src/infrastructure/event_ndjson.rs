@@ -12,21 +12,29 @@ fn app_event_to_json(ev: &AppEvent) -> serde_json::Value {
             edges,
             components,
             cyclic_components,
-        } => json!({"type":"scc_computed","nodes":nodes,"edges":edges,"components":components,"cyclic_components":cyclic_components}),
+        } => {
+            json!({"type":"scc_computed","nodes":nodes,"edges":edges,"components":components,"cyclic_components":cyclic_components})
+        }
         AppEvent::FolderMergePlanned {
             normalized_name,
             group_size,
-        } => json!({"type":"folder_merge_planned","normalized_name":normalized_name,"group_size":group_size}),
+        } => {
+            json!({"type":"folder_merge_planned","normalized_name":normalized_name,"group_size":group_size})
+        }
         AppEvent::FolderMerged {
             normalized_name,
             winner_path,
             losers,
-        } => json!({"type":"folder_merged","normalized_name":normalized_name,"winner_path":winner_path,"losers":losers}),
+        } => {
+            json!({"type":"folder_merged","normalized_name":normalized_name,"winner_path":winner_path,"losers":losers})
+        }
         AppEvent::UrlDeduped {
             folder_path,
             canonical_url,
             removed,
-        } => json!({"type":"url_deduped","folder_path":folder_path,"canonical_url":canonical_url,"removed":removed}),
+        } => {
+            json!({"type":"url_deduped","folder_path":folder_path,"canonical_url":canonical_url,"removed":removed})
+        }
         AppEvent::FolderPruned { folder_path } => {
             json!({"type":"folder_pruned","folder_path":folder_path})
         }
@@ -40,7 +48,7 @@ pub fn spawn_ndjson_printer(mut rx: mpsc::Receiver<AppEvent>) -> JoinHandle<()> 
             let line = app_event_to_json(&ev);
 
             // NDJSON to stdout.
-            println!("{}", line);
+            println!("{line}");
         }
     })
 }

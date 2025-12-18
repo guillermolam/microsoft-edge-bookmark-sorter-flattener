@@ -55,7 +55,10 @@ pub async fn global_folder_merge(
             stats.folders_merged += 1;
         }
 
-        let losers_paths: Vec<String> = losers.iter().map(|h| arena.nodes[h.0].path.clone()).collect();
+        let losers_paths: Vec<String> = losers
+            .iter()
+            .map(|h| arena.nodes[h.0].path.clone())
+            .collect();
         emit(
             sink,
             AppEvent::FolderMerged {
@@ -85,7 +88,10 @@ fn compare_folder_instance(arena: &Arena, a: Handle, b: Handle) -> Ordering {
         .then_with(|| aa.guid.cmp(&bb.guid))
 }
 
-fn cmp_date_added(a: &crate::usecase::normalize::arena::ArenaNode, b: &crate::usecase::normalize::arena::ArenaNode) -> Ordering {
+fn cmp_date_added(
+    a: &crate::usecase::normalize::arena::ArenaNode,
+    b: &crate::usecase::normalize::arena::ArenaNode,
+) -> Ordering {
     parse_edge_time(a.date_added.as_deref()).cmp(&parse_edge_time(b.date_added.as_deref()))
 }
 
@@ -96,7 +102,10 @@ fn parse_edge_time(s: Option<&str>) -> u64 {
     }
 }
 
-fn cmp_id(a: &crate::usecase::normalize::arena::ArenaNode, b: &crate::usecase::normalize::arena::ArenaNode) -> Ordering {
+fn cmp_id(
+    a: &crate::usecase::normalize::arena::ArenaNode,
+    b: &crate::usecase::normalize::arena::ArenaNode,
+) -> Ordering {
     let pa = a.id.as_deref().and_then(|s| s.parse::<u64>().ok());
     let pb = b.id.as_deref().and_then(|s| s.parse::<u64>().ok());
 

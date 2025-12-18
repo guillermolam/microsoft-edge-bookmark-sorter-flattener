@@ -77,18 +77,19 @@ mod tests {
         let dir = tempdir().expect("tempdir");
         let input_path = dir.path().join("Bookmarks.json");
 
-        let mut dto = BookmarksFileDto::default();
-        dto.version = Some(1);
-        dto.extra
-            .insert("x_test".to_string(), Value::String("ok".to_string()));
-        dto.roots.insert(
-            "bookmark_bar".to_string(),
-            BookmarkNodeDto {
-                node_type: "folder".to_string(),
-                name: Some("bar".to_string()),
-                ..BookmarkNodeDto::default()
-            },
-        );
+        let dto = BookmarksFileDto {
+            version: Some(1),
+            extra: BTreeMap::from([("x_test".to_string(), Value::String("ok".to_string()))]),
+            roots: BTreeMap::from([(
+                "bookmark_bar".to_string(),
+                BookmarkNodeDto {
+                    node_type: "folder".to_string(),
+                    name: Some("bar".to_string()),
+                    ..BookmarkNodeDto::default()
+                },
+            )]),
+            ..BookmarksFileDto::default()
+        };
 
         write_bookmarks_file(input_path.to_str().unwrap(), &dto)
             .await
@@ -99,10 +100,16 @@ mod tests {
             .expect("read");
 
         assert_eq!(reread.version, Some(1));
-        assert_eq!(reread.extra.get("x_test"), Some(&Value::String("ok".to_string())));
+        assert_eq!(
+            reread.extra.get("x_test"),
+            Some(&Value::String("ok".to_string()))
+        );
         assert_eq!(reread.roots.len(), 1);
         assert_eq!(
-            reread.roots.get("bookmark_bar").and_then(|n| n.name.as_deref()),
+            reread
+                .roots
+                .get("bookmark_bar")
+                .and_then(|n| n.name.as_deref()),
             Some("bar")
         );
     }
