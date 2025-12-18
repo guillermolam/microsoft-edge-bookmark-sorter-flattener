@@ -68,7 +68,7 @@ fn kosaraju_scc(graph: &Graph) -> SccResult {
             continue;
         }
         let only = comp[0];
-        if graph.edges[only].iter().any(|&v| v == only) {
+        if graph.edges[only].contains(&only) {
             cyclic_component[cid] = true;
         }
     }
