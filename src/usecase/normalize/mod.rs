@@ -53,9 +53,10 @@ impl FolderRegistry {
         sorted.sort_by_key(|(name, _)| (*name).clone());
         eprintln!("Folder counts:");
         for (name, count) in sorted {
-            eprintln!("  {}: {}", name, count);
+            eprintln!("  {name}: {count}");
         }
-        eprintln!("All unique: {}", self.all_unique());
+        let all = self.all_unique();
+        eprintln!("All unique: {all}");
     }
 
     pub fn print_final_registry(&self) {
@@ -65,9 +66,16 @@ impl FolderRegistry {
         eprintln!("folder_name | count (number of occurrences)");
         eprintln!("------------|-----------------------------");
         for (name, count) in sorted {
-            eprintln!("{:<12} | {} (number of occurrences)", name, count);
+            eprintln!("{name:<12} | {count} (number of occurrences)");
         }
-        eprintln!("All unique: {}", self.all_unique());
+        let all = self.all_unique();
+        eprintln!("All unique: {all}");
+    }
+}
+
+impl Default for FolderRegistry {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -118,7 +126,7 @@ pub async fn normalize_bookmarks(
         emit(
             &sink,
             AppEvent::PhaseStarted {
-                name: format!("folder_merge_iteration_{}", iteration),
+                name: format!("folder_merge_iteration_{iteration}"),
             },
         )
         .await;
@@ -181,7 +189,7 @@ pub async fn normalize_bookmarks(
             emit(
                 &sink,
                 AppEvent::PhaseFinished {
-                    name: format!("folder_merge_iteration_{}_complete", iteration),
+                    name: format!("folder_merge_iteration_{iteration}_complete"),
                 },
             )
             .await;
@@ -191,7 +199,7 @@ pub async fn normalize_bookmarks(
         emit(
             &sink,
             AppEvent::PhaseFinished {
-                name: format!("folder_merge_iteration_{}_continue", iteration),
+                name: format!("folder_merge_iteration_{iteration}_continue"),
             },
         )
         .await;

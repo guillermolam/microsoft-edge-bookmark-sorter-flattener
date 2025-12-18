@@ -42,6 +42,8 @@ In your report, include the commit hash: `git rev-parse HEAD`.
   - add safe, deterministic entry points for fuzz harnesses
   - add `#[cfg(fuzzing)]`-gated helpers (prefer feature flags)
 
+Note: Production I/O now validates input JSON via JSON Schemas at the serde boundary (using the `jsonschema` crate). Fuzz targets should therefore include schema-aware inputs and consider both pre- and post-validation paths when searching for robustness issues.
+
 ### You MAY read
 
 - src/\*\*

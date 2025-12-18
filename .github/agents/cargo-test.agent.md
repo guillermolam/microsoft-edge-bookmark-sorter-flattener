@@ -35,6 +35,8 @@ In your report, include the commit hash: `git rev-parse HEAD`.
   - `#[cfg(test)]` helpers
   - minimal test constructors/builders
   - tightening visibility to `pub(crate)` only when unavoidable
+
+  Note: The repo's I/O boundary performs JSON Schema validation. Unit/integration tests should test both schema-acceptable inputs and business-rule validation (via `validate_bookmarks`), and E2E tests assert the `validate` subcommand and final `Bookmarks` preservation policy (keep `extra`, strip `x_merge_meta`).
 - Cargo.toml only if adding dev-dependencies required for deterministic testing (minimize additions)
 
 ### You MAY read

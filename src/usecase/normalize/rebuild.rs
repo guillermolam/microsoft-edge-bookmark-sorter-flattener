@@ -1,7 +1,6 @@
 use crate::domain::traits::UrlCanonicalizer;
 use crate::infrastructure::serde_json_adapter::{BookmarkNodeDto, BookmarksFileDto};
 use crate::usecase::normalize::arena::{Arena, Handle};
-use std::collections::BTreeMap;
 
 pub fn rebuild_dto_from_arena(
     mut base: BookmarksFileDto,

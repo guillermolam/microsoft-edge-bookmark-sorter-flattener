@@ -27,7 +27,7 @@ Global E2E Definition of Done (must all be testable)
    - Tool writes cleaned output to an output path
    - Tool never overwrites input without a timestamped backup (backup enabled by flag)
    - Tool supports dry-run/report mode (no file modifications) and emits a summary
-   - Tool supports validate mode/subcommand that checks invariants on a file
+   - Tool supports validate mode/subcommand that checks invariants on a file. The `validate` command also performs JSON Schema validation at the serde I/O boundary and prints a deterministic message `schema validation passed` to stderr on success.
 2. Folder invariants:
    - Folder uniqueness across entire forest by case-insensitive name
    - No folder contains two subfolders with same case-insensitive name (must merge)
@@ -123,6 +123,9 @@ Acceptance Criteria (must be proven by E2E)
   - normalize with --backup produces a timestamped backup and does not overwrite the original without it
 - Validation scenario:
   - validate returns non-zero for a deliberately invalid fixture and zero for normalized output
+
+- Bookmarks output policy:
+   - Normalized output must preserve user-provided `extra` fields but strip any internal `x_merge_meta` entries before emitting the final `Bookmarks` JSON so it remains compatible with Microsoft Edge/Chrome.
 
 Start now
 

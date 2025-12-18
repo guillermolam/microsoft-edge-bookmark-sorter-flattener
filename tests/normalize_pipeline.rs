@@ -5,24 +5,66 @@ async fn global_folder_merge_unicode_canonicalization() {
     let composed = "Café"; // U+00E9
     let decomposed = "Cafe\u{0301}"; // U+0065 U+0301
     assert_ne!(composed, decomposed);
-    assert_eq!(composed.nfc().collect::<String>(), decomposed.nfc().collect::<String>());
+    assert_eq!(
+        composed.nfc().collect::<String>(),
+        decomposed.nfc().collect::<String>()
+    );
 
-    let f1 = folder(composed, Some("1"), None, Some("100"), vec![url("a", Some("1"), "http://example.com/a", None, None, Some("10"))]);
-    let f2 = folder(decomposed, Some("2"), None, Some("200"), vec![url("b", Some("2"), "http://example.com/b", None, None, Some("20"))]);
+    let f1 = folder(
+        composed,
+        Some("1"),
+        None,
+        Some("100"),
+        vec![url(
+            "a",
+            Some("1"),
+            "http://example.com/a",
+            None,
+            None,
+            Some("10"),
+        )],
+    );
+    let f2 = folder(
+        decomposed,
+        Some("2"),
+        None,
+        Some("200"),
+        vec![url(
+            "b",
+            Some("2"),
+            "http://example.com/b",
+            None,
+            None,
+            Some("20"),
+        )],
+    );
     let input = mk_input(vec![("bookmark_bar", root(vec![f1, f2]))]);
     let canonicalizer = DefaultUrlCanonicalizer;
     let scc = KosarajuSccDetector;
     let (out, stats) = normalize_bookmarks(input, &canonicalizer, &scc, None)
         .await
         .expect("normalize_bookmarks should succeed");
-    assert_eq!(stats.folders_merged, 1, "Unicode canonical folders should be merged");
+    assert_eq!(
+        stats.folders_merged, 1,
+        "Unicode canonical folders should be merged"
+    );
     let cafes = find_folders_named(&out, "Café");
-    assert_eq!(cafes.len(), 1, "Only one canonical Café folder should remain");
+    assert_eq!(
+        cafes.len(),
+        1,
+        "Only one canonical Café folder should remain"
+    );
     let cafe = cafes[0];
     let urls = find_urls_in_folder(cafe);
-    let mut url_vals: Vec<String> = urls.iter().map(|u| u.url.clone().unwrap_or_default()).collect();
+    let mut url_vals: Vec<String> = urls
+        .iter()
+        .map(|u| u.url.clone().unwrap_or_default())
+        .collect();
     url_vals.sort();
-    assert_eq!(url_vals, vec!["http://example.com/a", "http://example.com/b"]);
+    assert_eq!(
+        url_vals,
+        vec!["http://example.com/a", "http://example.com/b"]
+    );
     // x_merge_meta removed to preserve original JSON structure for Microsoft Edge compatibility
 }
 use microsoft_edge_bookmark_sorter_flattener::infrastructure::scc_kosaraju::KosarajuSccDetector;

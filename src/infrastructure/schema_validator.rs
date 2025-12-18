@@ -105,16 +105,15 @@ fn validate_bookmark_tree(node: &Value) -> Result<()> {
                 "url" => {
                     validate_url_item(node)?;
                 }
-                    _ => {
-                        // Unknown node types are permitted by higher-level business
-                        // validation; schema-validator should not reject them here.
-                        // Skip schema validation for unknown node types.
-                        return Ok(());
-                    }
+                _ => {
+                    // Unknown node types are permitted by higher-level business
+                    // validation; schema-validator should not reject them here.
+                    // Skip schema validation for unknown node types.
+                    return Ok(());
+                }
             }
         }
     }
 
     Ok(())
 }
-

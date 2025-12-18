@@ -164,7 +164,7 @@ impl Cli {
         let input = input.ok_or_else(|| anyhow!(format!("missing --in/--input\n\n{}", usage())))?;
         let output = if dry_run {
             // dry-run mode doesn't require an output path
-            output.unwrap_or_else(|| String::new())
+            output.unwrap_or_default()
         } else {
             output.ok_or_else(|| anyhow!(format!("missing --out/--output\n\n{}", usage())))?
         };

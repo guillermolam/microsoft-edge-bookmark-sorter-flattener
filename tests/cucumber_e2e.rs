@@ -2,7 +2,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Output;
 
-use cucumber::{World as _, given, then, when};
+use cucumber::{given, then, when, World as _};
 use tempfile::TempDir;
 use tokio::process::Command;
 use tokio::time::{timeout, Duration};
@@ -68,15 +68,12 @@ fn an_input_bookmarks_file_with_duplicates(world: &mut TestWorld) {
 fn a_bookmarks_file_from_env(world: &mut TestWorld, var_name: String) {
     let dir = world.dir.as_ref().expect("temp dir");
     let src = std::env::var(&var_name).unwrap_or_else(|_| {
-        panic!(
-            "missing env var {var_name}. Set it to your Edge/Chrome Bookmarks file path"
-        )
+        panic!("missing env var {var_name}. Set it to your Edge/Chrome Bookmarks file path")
     });
 
     let input_path = dir.path().join("Bookmarks.json");
-    fs::copy(&src, &input_path).unwrap_or_else(|e| {
-        panic!("failed to copy bookmarks file from {src}: {e}")
-    });
+    fs::copy(&src, &input_path)
+        .unwrap_or_else(|e| panic!("failed to copy bookmarks file from {src}: {e}"));
     world.input_path = Some(input_path);
 }
 
@@ -160,7 +157,11 @@ async fn i_run_bookmarks_normalize_twice_to_two_output_files(world: &mut TestWor
         out1.to_string_lossy().into_owned(),
     ])
     .await;
-    assert!(r1.status.success(), "first normalize failed: {}", stderr_string(&r1));
+    assert!(
+        r1.status.success(),
+        "first normalize failed: {}",
+        stderr_string(&r1)
+    );
 
     let r2 = run_cmd(vec![
         "bookmarks".to_string(),
@@ -277,10 +278,7 @@ fn output_has_no_duplicate_folder_names(world: &mut TestWorld) {
         }
     }
 
-    let dups: Vec<(String, usize)> = counts
-        .into_iter()
-        .filter(|(_, c)| *c > 1)
-        .collect();
+    let dups: Vec<(String, usize)> = counts.into_iter().filter(|(_, c)| *c > 1).collect();
 
     assert!(dups.is_empty(), "duplicate folder names found: {dups:?}");
 }
@@ -375,7 +373,11 @@ fn the_command_succeeds(world: &mut TestWorld) {
                 assert!(!roots.is_empty(), "output should have roots");
                 for root in roots.values() {
                     if let Some(obj) = root.as_object() {
-                        assert_eq!(obj.get("type").and_then(|t| t.as_str()), Some("folder"), "root should be folder");
+                        assert_eq!(
+                            obj.get("type").and_then(|t| t.as_str()),
+                            Some("folder"),
+                            "root should be folder"
+                        );
                     }
                 }
             }

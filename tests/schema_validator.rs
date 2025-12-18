@@ -1,5 +1,5 @@
-use serde_json::json;
 use anyhow::Result;
+use serde_json::json;
 
 use microsoft_edge_bookmark_sorter_flattener::infrastructure::schema_validator::{
     validate_folder_item, validate_url_item,

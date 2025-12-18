@@ -38,6 +38,8 @@ In your report, include the commit hash: `git rev-parse HEAD`.
 - docs/testing.md (if present) or docs/** for runner documentation
 - scripts/** for test runner helper scripts (optional)
 
+Note: The test harness includes an ATDD `validate` step that runs JSON Schema validation at the serde boundary and expects deterministic output messages. Ensure nextest config keeps E2E timeouts tight and captures stderr for assertions like `schema validation passed`.
+
 ### You MAY read
 - tests/**
 - src/**

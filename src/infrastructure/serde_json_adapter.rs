@@ -84,23 +84,22 @@ pub async fn write_bookmarks_file(path: &str, dto: &BookmarksFileDto) -> Result<
 
                 // Check if it's a permission/lock error
                 if e.kind() == std::io::ErrorKind::PermissionDenied
-                    || e.raw_os_error()
-                        .map_or(false, |code| code == 13 || code == 1)
+                    || e.raw_os_error().is_some_and(|code| code == 13 || code == 1)
                 {
                     // EACCES or EPERM
 
                     if attempt == 1 {
-                        eprintln!("Warning: File {} appears to be locked or inaccessible (possibly by Microsoft Edge).", path);
+                        eprintln!("Warning: File {path} appears to be locked or inaccessible (possibly by Microsoft Edge).");
                         eprintln!("Attempting to close Microsoft Edge processes...");
 
                         // Try to find and terminate Microsoft Edge processes
                         let _ = process::Command::new("pkill")
-                            .args(&["-f", "microsoft-edge"])
+                            .args(["-f", "microsoft-edge"])
                             .status()
                             .await;
 
                         let _ = process::Command::new("pkill")
-                            .args(&["-f", "msedge"])
+                            .args(["-f", "msedge"])
                             .status()
                             .await;
 
@@ -110,7 +109,7 @@ pub async fn write_bookmarks_file(path: &str, dto: &BookmarksFileDto) -> Result<
 
                     if attempt < max_retries {
                         let delay_ms = 500 * attempt; // Progressive delay: 500ms, 1000ms, 1500ms, 2000ms
-                        eprintln!("Retry {} of {} in {}ms...", attempt, max_retries, delay_ms);
+                        eprintln!("Retry {attempt} of {max_retries} in {delay_ms}ms...");
                         time::sleep(time::Duration::from_millis(delay_ms)).await;
                         continue;
                     }
@@ -123,7 +122,7 @@ pub async fn write_bookmarks_file(path: &str, dto: &BookmarksFileDto) -> Result<
     }
 
     // If we get here, all retries failed
-    Err(std::io::Error::new(std::io::ErrorKind::Other, last_error.unwrap()).into())
+    Err(std::io::Error::other(last_error.unwrap()).into())
 }
 
 #[cfg(test)]

@@ -4,7 +4,6 @@ use crate::infrastructure::schema_validator::{
 };
 use crate::infrastructure::serde_json_adapter::BookmarksFileDto;
 use anyhow::{anyhow, Result};
-use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 
 pub fn validate_bookmarks(
