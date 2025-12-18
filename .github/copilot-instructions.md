@@ -45,6 +45,7 @@ The codebase is organized using Clean / Hexagonal Architecture:
 Copilot must respect this **mandatory pipeline**:
 
 1. **Parse JSON → DTOs** (serde adapter)
+1.1 **Validate JSON → Schemas** (infrastructure uses `jsonschema` crate to validate bookmarks, folder and url schemas)
 2. **Build folder containment graph**
 3. **Detect SCCs (iterative, no recursion)**
 4. **Condense SCCs into a DAG**

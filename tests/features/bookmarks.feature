@@ -38,3 +38,14 @@ Feature: Bookmarks CLI normalization
     And output has no duplicate urls within any folder
     When I run bookmarks validate on the output file
     Then the command succeeds
+
+  @requires_real_bookmarks
+  Scenario: Real Bookmarks schema validation and dry run
+    Given a temp bookmarks workspace
+    And a bookmarks file from env "EDGE_BOOKMARKS_PATH"
+    When I run bookmarks validate on the input file
+    Then the command succeeds
+    And stderr mentions "schema validation passed"
+    When I run bookmarks normalize with dry run on the input file
+    Then the command succeeds
+    And no output file is created

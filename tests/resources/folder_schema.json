@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Microsoft Edge Bookmark Folder Item",
+  "description": "Schema for folder bookmark items in Microsoft Edge bookmarks",
+  "type": "object",
+  "required": ["type", "name", "date_added", "guid", "id", "children"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["folder"],
+      "description": "Item type, must be 'folder'"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the folder"
+    },
+    "date_added": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Date added as a string of digits (microseconds since epoch)"
+    },
+    "date_modified": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Date modified as a string of digits (microseconds since epoch)"
+    },
+    "date_last_used": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Date last used as a string of digits (microseconds since epoch)"
+    },
+    "guid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the folder"
+    },
+    "id": {
+      "type": "string",
+      "description": "Internal ID of the folder"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["sync", "extension", "user_add", "unknown"],
+      "description": "Source of the folder"
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"$ref": "url_schema.json"},
+          {"$ref": "folder_schema.json"}
+        ]
+      },
+      "description": "Child items (folders or URLs)"
+    }
+  },
+  "additionalProperties": false
+}

@@ -82,11 +82,6 @@ fn alloc_node(
         path,
         depth,
         deleted: false,
-        merged_names: Vec::new(),
-        merged_ids: Vec::new(),
-        merged_guids: Vec::new(),
-        merged_paths: Vec::new(),
-        merged_from: Vec::new(),
     });
     arena.parent.push(parent);
 
@@ -133,11 +128,6 @@ fn alloc_node(
                 path: kid_path.clone(),
                 depth: parent_depth + 1,
                 deleted: false,
-                merged_names: Vec::new(),
-                merged_ids: Vec::new(),
-                merged_guids: Vec::new(),
-                merged_paths: Vec::new(),
-                merged_from: Vec::new(),
             });
             arena.parent.push(Some(parent_h));
 

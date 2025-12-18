@@ -2,7 +2,6 @@ use crate::domain::traits::UrlCanonicalizer;
 use crate::usecase::event::AppEvent;
 use crate::usecase::normalize::arena::{Arena, Handle};
 use crate::usecase::stats::NormalizeStats;
-use serde_json::json;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use tokio::sync::mpsc;
@@ -68,7 +67,7 @@ pub async fn per_folder_url_dedup(
         canon_keys.sort();
 
         for canon in canon_keys {
-            let Some(&winner) = best.get(&canon) else {
+            let Some(&_winner) = best.get(&canon) else {
                 continue;
             };
             let Some(removed) = removed_by_url.get(&canon) else {
@@ -87,19 +86,6 @@ pub async fn per_folder_url_dedup(
 
             for rm in removed_sorted.iter() {
                 // Clone node data first to avoid borrow conflict
-                let rm_id = arena.nodes[rm.0].id.clone();
-                let rm_guid = arena.nodes[rm.0].guid.clone();
-                let rm_name = arena.nodes[rm.0].name.clone();
-                let rm_url = arena.nodes[rm.0].url.clone();
-                let rm_path = arena.nodes[rm.0].path.clone();
-
-                arena.nodes[winner.0].merged_from.push(json!({
-                    "id": rm_id,
-                    "guid": rm_guid,
-                    "name": rm_name,
-                    "url": rm_url,
-                    "path": rm_path,
-                }));
                 arena.nodes[rm.0].deleted = true;
             }
 

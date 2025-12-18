@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Microsoft Edge Bookmark URL Item",
+  "description": "Schema for URL bookmark items in Microsoft Edge bookmarks",
+  "type": "object",
+  "required": ["type", "name", "url", "date_added", "guid", "id"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["url"],
+      "description": "Item type, must be 'url'"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the bookmark"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the bookmark"
+    },
+    "date_added": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Date added as a string of digits (microseconds since epoch)"
+    },
+    "date_last_used": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Date last used as a string of digits (microseconds since epoch)"
+    },
+    "guid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the bookmark"
+    },
+    "id": {
+      "type": "string",
+      "description": "Internal ID of the bookmark"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["sync", "extension", "user_add", "unknown"],
+      "description": "Source of the bookmark"
+    },
+    "show_icon": {
+      "type": "boolean",
+      "description": "Whether to show the favicon"
+    },
+    "visit_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of times the bookmark has been visited"
+    }
+  },
+  "additionalProperties": false
+}

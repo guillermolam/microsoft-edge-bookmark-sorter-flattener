@@ -1,8 +1,9 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
 use tokio::{fs, process, time};
+use crate::infrastructure::schema_validator::{validate_all_bookmark_items, validate_bookmarks_file};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct BookmarksFileDto {
@@ -57,7 +58,13 @@ pub struct BookmarkNodeDto {
 
 pub async fn read_bookmarks_file(path: &str) -> Result<BookmarksFileDto> {
     let raw = fs::read_to_string(path).await?;
-    let dto: BookmarksFileDto = serde_json::from_str(&raw)?;
+    let raw_value: Value = serde_json::from_str(&raw)?;
+
+    // Run schema validation for top-level and all bookmark items.
+    validate_bookmarks_file(&raw_value)?;
+    validate_all_bookmark_items(&raw_value)?;
+
+    let dto: BookmarksFileDto = serde_json::from_value(raw_value)?;
     Ok(dto)
 }
 

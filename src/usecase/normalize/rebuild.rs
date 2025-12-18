@@ -1,6 +1,7 @@
 use crate::domain::traits::UrlCanonicalizer;
 use crate::infrastructure::serde_json_adapter::{BookmarkNodeDto, BookmarksFileDto};
 use crate::usecase::normalize::arena::{Arena, Handle};
+use std::collections::BTreeMap;
 
 pub fn rebuild_dto_from_arena(
     mut base: BookmarksFileDto,
@@ -16,7 +17,7 @@ pub fn rebuild_dto_from_arena(
                 continue;
             }
 
-            let mut node = std::mem::take(&mut arena.nodes[h.0]);
+            let node = std::mem::take(&mut arena.nodes[h.0]);
             let mut kids: Vec<BookmarkNodeDto> = Vec::new();
             for ch in node.children.iter() {
                 if let Some(k) = built[ch.0].take() {
@@ -26,8 +27,6 @@ pub fn rebuild_dto_from_arena(
 
             // Deterministic child order.
             kids.sort_by_cached_key(|a| sort_key(a, canonicalizer));
-
-            let extra = std::mem::take(&mut node.extra);
 
             let dto = BookmarkNodeDto {
                 node_type: node.node_type.clone(),
@@ -42,7 +41,7 @@ pub fn rebuild_dto_from_arena(
                 id: node.id.clone(),
                 source: node.source.clone(),
                 show_icon: node.show_icon,
-                extra,
+                extra: BTreeMap::new(), // No extra fields in output to preserve Microsoft Edge compatibility
             };
 
             // Removed write_merge_meta to preserve original JSON structure

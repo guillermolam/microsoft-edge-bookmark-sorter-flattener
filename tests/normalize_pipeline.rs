@@ -515,24 +515,10 @@ async fn global_folder_merge_normalizes_names_and_merges_across_roots() {
         vec!["from_bar".to_string(), "from_other".to_string()]
     );
 
-    let meta = work
-        .extra
-        .get("x_merge_meta")
-        .cloned()
-        .expect("winner folder should have x_merge_meta for merged names and paths");
-    let merged_names = meta["merged_names"].as_array().cloned().unwrap_or_default();
+    // Verify no merge metadata is added to preserve Microsoft Edge compatibility
     assert!(
-        merged_names
-            .iter()
-            .any(|v| v.as_str() == Some("work") || v.as_str() == Some("  Work ")),
-        "x_merge_meta.merged_names should record loser folder name",
-    );
-    let merged_paths = meta["merged_paths"].as_array().cloned().unwrap_or_default();
-    assert!(
-        merged_paths
-            .iter()
-            .any(|v| v.as_str().map(|s| s.starts_with("other/")).unwrap_or(false)),
-        "x_merge_meta.merged_paths should record loser folder path from 'other' root",
+        !work.extra.contains_key("x_merge_meta"),
+        "no x_merge_meta should be present in output for Microsoft Edge compatibility"
     );
 }
 

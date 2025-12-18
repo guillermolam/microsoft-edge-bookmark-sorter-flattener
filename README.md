@@ -49,6 +49,7 @@ The authoritative contract is in [docs/domain-rules.md](docs/domain-rules.md).
 ## The processing pipeline
 
 1. Parse JSON into DTOs (serde boundary)
+1.1. Validate parsed JSON against bundled JSON Schemas (folder, url, bookmarks) using the `jsonschema` crate
 2. Build an in-memory arena representation for processing
 3. Compute SCC diagnostics on an identity graph (iterative, recursion-free)
 4. Merge folders globally by normalized name (outermost winner rule)

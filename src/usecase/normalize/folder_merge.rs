@@ -127,40 +127,32 @@ fn merge_folder_into(arena: &mut Arena, loser: Handle, winner: Handle) {
         return;
     }
 
-    let loser_path = arena.nodes[loser.0].path.clone();
-    let loser_name = arena.nodes[loser.0].name.clone();
-    let loser_id = arena.nodes[loser.0].id.clone();
-    let loser_guid = arena.nodes[loser.0].guid.clone();
+    let _loser_path = arena.nodes[loser.0].path.clone();
 
+    // Merge children from loser into winner
     let mut children = std::mem::take(&mut arena.nodes[loser.0].children);
     for ch in children.iter() {
         arena.parent[ch.0] = Some(winner);
     }
     arena.nodes[winner.0].children.append(&mut children);
 
-    if let Some(n) = loser_name {
-        arena.nodes[winner.0].merged_names.push(n);
+    // Merge attributes - keep winner's attributes but accumulate visit counts
+    if let Some(loser_visit_count) = arena.nodes[loser.0].visit_count {
+        arena.nodes[winner.0].visit_count = Some(
+            arena.nodes[winner.0].visit_count.unwrap_or(0) + loser_visit_count
+        );
     }
-    if let Some(id) = loser_id {
-        arena.nodes[winner.0].merged_ids.push(id);
-    }
-    if let Some(g) = loser_guid {
-        arena.nodes[winner.0].merged_guids.push(g);
-    }
-    arena.nodes[winner.0].merged_paths.push(loser_path.clone());
 
-    // Update x_merge_meta in winner's extra
-    use serde_json::json;
-    let meta = json!({
-        "merged_names": arena.nodes[winner.0].merged_names,
-        "merged_ids": arena.nodes[winner.0].merged_ids,
-        "merged_guids": arena.nodes[winner.0].merged_guids,
-        "merged_paths": arena.nodes[winner.0].merged_paths,
-    });
-    arena.nodes[winner.0]
-        .extra
-        .insert("x_merge_meta".to_string(), meta);
+    // Update date_modified to the most recent
+    let winner_date = arena.nodes[winner.0].date_modified.as_deref()
+        .and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+    let loser_date = arena.nodes[loser.0].date_modified.as_deref()
+        .and_then(|s| s.parse::<u64>().ok()).unwrap_or(0);
+    if loser_date > winner_date {
+        arena.nodes[winner.0].date_modified = arena.nodes[loser.0].date_modified.clone();
+    }
 
+    // Remove loser from parent's children
     if let Some(parent) = arena.parent[loser.0] {
         arena.nodes[parent.0].children.retain(|h| h.0 != loser.0);
     }

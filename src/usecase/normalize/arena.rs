@@ -27,12 +27,6 @@ pub struct ArenaNode {
     pub depth: usize,
 
     pub deleted: bool,
-
-    pub merged_names: Vec<String>,
-    pub merged_ids: Vec<String>,
-    pub merged_guids: Vec<String>,
-    pub merged_paths: Vec<String>,
-    pub merged_from: Vec<serde_json::Value>,
 }
 
 #[derive(Debug, Clone, Default)]

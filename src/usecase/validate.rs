@@ -1,12 +1,19 @@
 use crate::domain::traits::UrlCanonicalizer;
+use crate::infrastructure::schema_validator::{validate_all_bookmark_items, validate_bookmarks_file};
 use crate::infrastructure::serde_json_adapter::BookmarksFileDto;
 use anyhow::{anyhow, Result};
+use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 
 pub fn validate_bookmarks(
     dto: &BookmarksFileDto,
     canonicalizer: &dyn UrlCanonicalizer,
 ) -> Result<()> {
+    // First, validate against JSON schemas
+    let bookmarks_value = serde_json::to_value(dto)?;
+    validate_bookmarks_file(&bookmarks_value)?;
+    validate_all_bookmark_items(&bookmarks_value)?;
+
     // Iterative traversal (no recursion).
     // We treat the document as a forest of folders rooted at `dto.roots`.
 

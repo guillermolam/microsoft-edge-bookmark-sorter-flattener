@@ -25,8 +25,9 @@ pub async fn run_with_args(args: &[String]) -> Result<()> {
             output,
             emit_events,
             backup,
+            dry_run,
         } => {
-            if is_same_file(&input, &output) {
+            if !dry_run && is_same_file(&input, &output) {
                 if !backup {
                     return Err(anyhow!(
                         "refusing to overwrite input without --backup: {input}"
@@ -51,11 +52,14 @@ pub async fn run_with_args(args: &[String]) -> Result<()> {
             let canonicalizer = DefaultUrlCanonicalizer;
             let scc = KosarajuSccDetector;
 
+
             let (out, stats) = normalize_bookmarks(dto, &canonicalizer, &scc, Some(tx)).await?;
 
-            write_bookmarks_file(&output, &out)
-                .await
-                .with_context(|| format!("writing output bookmarks JSON: {output}"))?;
+            if !dry_run {
+                write_bookmarks_file(&output, &out)
+                    .await
+                    .with_context(|| format!("writing output bookmarks JSON: {output}"))?;
+            }
 
             if let Some(handle) = printer {
                 handle.await.ok();
@@ -82,6 +86,8 @@ pub async fn run_with_args(args: &[String]) -> Result<()> {
             validate_bookmarks(&dto, &canonicalizer)
                 .with_context(|| format!("validating bookmarks: {input}"))?;
 
+            // Emit an explicit schema validation success message for e2e tests.
+            eprintln!("schema validation passed");
             eprintln!("ok: invariants validated");
             Ok(())
         }
@@ -95,6 +101,7 @@ enum Cli {
         output: String,
         emit_events: bool,
         backup: bool,
+        dry_run: bool,
     },
     BookmarksValidate {
         input: String,
@@ -127,6 +134,7 @@ impl Cli {
         let mut output: Option<String> = None;
         let mut emit_events = false;
         let mut backup = false;
+        let mut dry_run = false;
 
         let mut i = 3;
         while i < args.len() {
@@ -142,6 +150,9 @@ impl Cli {
                 "--emit-events" => {
                     emit_events = true;
                 }
+                "--dry-run" => {
+                    dry_run = true;
+                }
                 "--backup" => {
                     backup = true;
                 }
@@ -152,14 +163,19 @@ impl Cli {
         }
 
         let input = input.ok_or_else(|| anyhow!(format!("missing --in/--input\n\n{}", usage())))?;
-        let output =
-            output.ok_or_else(|| anyhow!(format!("missing --out/--output\n\n{}", usage())))?;
+        let output = if dry_run {
+            // dry-run mode doesn't require an output path
+            output.unwrap_or_else(|| String::new())
+        } else {
+            output.ok_or_else(|| anyhow!(format!("missing --out/--output\n\n{}", usage())))?
+        };
 
         Ok(Cli::BookmarksNormalize {
             input,
             output,
             emit_events,
             backup,
+            dry_run,
         })
     }
 
