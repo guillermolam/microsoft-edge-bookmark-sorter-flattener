@@ -24,9 +24,11 @@ Process:
    - DTO boundary needed → handoff to serde-compatibility-agent
 4) Ensure warning-free build (CI -D warnings).
 5) Run cargo test and report.
+6) Commit and push the changes so progress is durable and reviewable.
 
 Output:
 - Files changed (paths only)
 - Boundary violations fixed
 - Any handoffs triggered
 - Confirmation cargo test is green and warning-free
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed

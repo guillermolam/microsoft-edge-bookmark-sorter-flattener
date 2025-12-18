@@ -29,10 +29,11 @@ Use #agent with release-engineer-agent to:
 Step 2 — Enter the coverage loop
 Repeat the following steps until coverage >=98%:
 
-1) Use #agent with test-fuzz-agent to:
+1) Use #agent with cargo-fuzz-agent to:
    - Add unit, property, and fuzz tests
    - Prefer deterministic, minimal tests
    - Never change production semantics
+
 
 2) If tests or CI fail:
    - Use #agent with Plan
@@ -60,3 +61,7 @@ When coverage >=98% and all gates pass:
 - Use #agent with release-engineer-agent
 - Perform final release readiness verification
 - Stop and report success
+
+Version control (required):
+- After each successful iteration (or any meaningful progress), ensure the owning agent commits and pushes.
+- Require each owning agent to include `git rev-parse HEAD` in their report.

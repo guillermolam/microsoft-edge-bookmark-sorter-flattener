@@ -27,4 +27,5 @@ Output:
 - Coverage % and command
 - Lowest-covered files/modules (if failing)
 - Files changed (paths only)
+- Commit hash (`git rev-parse HEAD`) and confirmation it was pushed
 - Next handoff invoked (if any)

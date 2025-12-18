@@ -19,6 +19,16 @@ You own **how tests are executed at scale**:
 
 You do NOT write core business logic. You do NOT redefine invariants.
 
+## Version control hygiene (Required)
+
+Before reporting progress or handing off work:
+- Confirm only intended files changed: `git status` + `git diff`
+- Stage only intended hunks/files (prefer `git add -p`)
+- Commit incremental progress with a clear message
+- Push your branch so progress is durable and reviewable
+
+In your report, include the commit hash: `git rev-parse HEAD`.
+
 ## Ownership (Hard Boundaries)
 
 ### You MAY edit
