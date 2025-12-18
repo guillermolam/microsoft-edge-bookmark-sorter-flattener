@@ -1,7 +1,7 @@
 ```markdown
 # Microsoft Edge Bookmark Sorter & Flattener
 
-A Rust application for cycle-safe normalization of Microsoft Edge / Chrome bookmarks JSON: detects cyclic folder references, collapses them into a DAG, globally merges folders by name, deduplicates URLs per folder, and prunes empty folders — deterministically, without losing data.
+A Rust application for cycle-safe normalization of Microsoft Edge / Chrome bookmarks JSON: computes SCC diagnostics, globally merges folders by name, deduplicates URLs per folder, and prunes empty folders — deterministically, without losing data.
 
 ## Bookmark File Location
 - Edge Bookmarks File: file:///C:/Users/guill/AppData/Local/Microsoft/Edge/User%20Data/Default/Bookmarks
@@ -13,7 +13,7 @@ A Rust application for cycle-safe normalization of Microsoft Edge / Chrome bookm
 This codebase exemplifies the synthesis of Martin Fowler's enterprise patterns, Uncle Bob's SOLID principles, Debasish Ghosh's functional domain modeling, Martin Kleppmann's data-intensive application design, and Graydon Hoare's Rust philosophy. It prioritizes system quality attributes in this order:
 
 1. Correctness & Reliability - No data loss, robust error handling
-2. Performance & Scalability - Non-blocking, async-first design
+2. Performance & Scalability - Iterative O(V+E) algorithms; async only at boundaries
 3. Maintainability - Clean separation of concerns, SOLID principles
 4. Extensibility - Strategy, Observer, and Factory patterns
 5. Observability - Structured tracing and event-driven monitoring
@@ -36,60 +36,26 @@ Some bookmark exports reuse the same folder node (by id/guid) in multiple places
 
 Traditional recursive "walk children" logic will loop forever or blow the stack. This project treats folder containment as a directed graph and makes it acyclic via SCC (Strongly Connected Components) condensation before any merging.
 
+Note: SCCs are computed and emitted for observability today; SCC condensation into a processing DAG is a planned evolution of the pipeline.
+
 ---
 
 ## Domain rules (the contract)
 
-### Folder identity and merging
-- A folder’s uniqueness key is its normalized name:
-  normalize_folder_name(name) = unicode_casefold(trim(name)) (at minimum: trim + lowercase)
-- Global invariant: only one folder per normalized name exists across all bookmarks.
-- Local invariant: a folder cannot contain two subfolders with the same normalized name; they must merge.
-
-### Outermost merge destination rule
-If folder Z appears at multiple places, e.g.:
-- X -> Y -> Z
-- J -> Z
-- K -> D -> Z
-
-Then all Z contents merge into J -> Z and the other Z references are removed, yielding:
-- X -> Y
-- J -> Z (merged)
-- K -> D
-
-Winner selection is deterministic:
-1. minimal path depth from any root
-2. earliest date_added
-3. smallest numeric id (if parseable)
-4. smallest guid lexicographic
-
-### URL deduplication per folder
-- Node type "url" is deduped within each folder by canonicalized URL string.
-- A URL may exist in multiple folders, but only once per folder.
-- Winner selection:
-  1) highest visit_count
-  2) latest date_last_used
-  3) earliest date_added
-  4) smallest id
-
-### Provenance and "no data loss"
-Merges/dedups do not silently discard information. Removed duplicates contribute to metadata:
-- folders: x_merge_meta.merged_names, x_merge_meta.merged_ids, x_merge_meta.merged_guids, optionally merged paths
-- urls: x_merge_meta.merged_from with loser metadata
+The authoritative contract is in [docs/domain-rules.md](docs/domain-rules.md).
 
 ---
 
-## The processing pipeline (SCC-first)
+## The processing pipeline
 
 1. Parse JSON into DTOs (serde boundary)
-2. Extract folder nodes and edges to build a directed graph
-3. Compute SCCs (iterative, recursion-free)
-4. Collapse SCCs into components and build a condensed DAG
-5. Pick canonical folder instance per normalized name (outermost winner rule)
-6. Merge folder children and URL nodes into winners
-7. Prune empty folders created by the merge
-8. Emit deterministic JSON output (same roots structure)
-9. Emit events throughout for observability
+2. Build an in-memory arena representation for processing
+3. Compute SCC diagnostics on an identity graph (iterative, recursion-free)
+4. Merge folders globally by normalized name (outermost winner rule)
+5. Deduplicate URLs per folder by canonicalized URL
+6. Prune empty folders created by the merge
+7. Rebuild deterministic JSON output (same roots structure)
+8. Emit events throughout for observability
 
 ---
 
