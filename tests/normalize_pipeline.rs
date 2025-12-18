@@ -107,7 +107,7 @@ fn mk_input(roots: Vec<(&str, BookmarkNodeDto)>) -> BookmarksFileDto {
     }
 }
 
-fn traverse<'a>(root: &'a BookmarkNodeDto) -> Vec<&'a BookmarkNodeDto> {
+fn traverse(root: &BookmarkNodeDto) -> Vec<&BookmarkNodeDto> {
     let mut out = Vec::new();
     let mut stack = vec![root];
     while let Some(n) = stack.pop() {
@@ -131,7 +131,7 @@ fn find_folders_named<'a>(dto: &'a BookmarksFileDto, name: &str) -> Vec<&'a Book
     found
 }
 
-fn find_urls_in_folder<'a>(folder: &'a BookmarkNodeDto) -> Vec<&'a BookmarkNodeDto> {
+fn find_urls_in_folder(folder: &BookmarkNodeDto) -> Vec<&BookmarkNodeDto> {
     folder
         .children
         .iter()
@@ -389,7 +389,7 @@ async fn preserves_unknown_fields_and_adds_top_level_merge_meta() {
 
     assert_eq!(out.extra.get("top"), Some(&json!("keep_top")));
     assert!(
-        out.extra.get("x_merge_meta").is_some(),
+        out.extra.contains_key("x_merge_meta"),
         "normalize should always add top-level x_merge_meta"
     );
 
