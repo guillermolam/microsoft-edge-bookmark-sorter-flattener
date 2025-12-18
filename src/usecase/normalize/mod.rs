@@ -109,12 +109,8 @@ pub async fn normalize_bookmarks(
     )
     .await;
     let mut out = rebuild::rebuild_dto_from_arena(input, arena, canonicalizer);
-    out.extra.insert(
-        "x_merge_meta".to_string(),
-        json!({
-            "scc": scc_summary
-        }),
-    );
+    out.extra
+        .insert("x_merge_meta".to_string(), json!({ "scc": scc_summary }));
     emit(
         &sink,
         AppEvent::PhaseFinished {

@@ -64,12 +64,28 @@ pub async fn per_folder_url_dedup(
             continue;
         }
 
-        for (canon, removed) in removed_by_url {
+        let mut canon_keys: Vec<String> = removed_by_url.keys().cloned().collect();
+        canon_keys.sort();
+
+        for canon in canon_keys {
             let Some(&winner) = best.get(&canon) else {
                 continue;
             };
+            let Some(removed) = removed_by_url.get(&canon) else {
+                continue;
+            };
 
-            for rm in removed.iter() {
+            let mut removed_sorted = removed.clone();
+            removed_sorted.sort_by_cached_key(|h| {
+                let n = &arena.nodes[h.0];
+                (
+                    id_key(n.id.as_deref()),
+                    n.guid.clone().unwrap_or_default(),
+                    n.path.clone(),
+                )
+            });
+
+            for rm in removed_sorted.iter() {
                 // Clone node data first to avoid borrow conflict
                 let rm_id = arena.nodes[rm.0].id.clone();
                 let rm_guid = arena.nodes[rm.0].guid.clone();
@@ -103,7 +119,7 @@ pub async fn per_folder_url_dedup(
                 AppEvent::UrlDeduped {
                     folder_path: arena.nodes[folder_h].path.clone(),
                     canonical_url: canon,
-                    removed: removed.len(),
+                    removed: removed_sorted.len(),
                 },
             )
             .await;
