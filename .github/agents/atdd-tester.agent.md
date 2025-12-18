@@ -68,5 +68,8 @@ You are the **ATDD E2E test agent**.
 ## Acceptance criteria
 
 - E2E scenarios cover: backup safety, validate behavior, determinism (run twice => identical output), and core invariants.
+- E2E suite includes a scenario that validates a real Edge/Chrome `Bookmarks` file final state (no duplicate folders; no duplicate URL entries within any folder) by running the real CLI.
+  - This scenario must be gated behind an environment variable (e.g. `EDGE_BOOKMARKS_PATH`) so CI remains stable.
+- E2E execution must have a hard time limit per CLI run to detect infinite-loop regressions early; failures must be delegated to the correct owning agent (graph/SCC, determinism, serde boundary, or CLI ergonomics).
 - The suite is deterministic and does not depend on filesystem ordering or HashMap iteration.
 - All progress is committed and pushed as small reviewable commits.

@@ -27,3 +27,14 @@ Feature: Bookmarks CLI normalization
     When I run bookmarks normalize in place with backup
     Then the command succeeds
     And a timestamped backup file exists
+
+  @requires_real_bookmarks
+  Scenario: Real Bookmarks final state validates (no duplicates, terminates)
+    Given a temp bookmarks workspace
+    And a bookmarks file from env "EDGE_BOOKMARKS_PATH"
+    When I run bookmarks normalize to an output file
+    Then the command succeeds
+    And output has no duplicate folder names
+    And output has no duplicate urls within any folder
+    When I run bookmarks validate on the output file
+    Then the command succeeds
