@@ -26,7 +26,7 @@ pub fn rebuild_dto_from_arena(
             }
 
             // Deterministic child order.
-            kids.sort_by(|a, b| sort_key(a, canonicalizer).cmp(&sort_key(b, canonicalizer)));
+            kids.sort_by_cached_key(|a| sort_key(a, canonicalizer));
 
             let extra = std::mem::take(&mut node.extra);
 
@@ -97,7 +97,10 @@ fn sort_key(n: &BookmarkNodeDto, canonicalizer: &dyn UrlCanonicalizer) -> (u8, S
     }
 }
 
-fn write_merge_meta(dto: &mut BookmarkNodeDto, node: &mut crate::usecase::normalize::arena::ArenaNode) {
+fn write_merge_meta(
+    dto: &mut BookmarkNodeDto,
+    node: &mut crate::usecase::normalize::arena::ArenaNode,
+) {
     let mut merged_names = std::mem::take(&mut node.merged_names);
     let mut merged_ids = std::mem::take(&mut node.merged_ids);
     let mut merged_guids = std::mem::take(&mut node.merged_guids);

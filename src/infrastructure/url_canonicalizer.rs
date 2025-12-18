@@ -32,6 +32,6 @@ impl UrlCanonicalizer for DefaultUrlCanonicalizer {
         let authority = &rest[..end];
         let tail = &rest[end..];
         let authority_lc = authority.to_lowercase();
-        format!("{}://{}{}", scheme_lc, authority_lc, tail)
+        format!("{scheme_lc}://{authority_lc}{tail}")
     }
 }

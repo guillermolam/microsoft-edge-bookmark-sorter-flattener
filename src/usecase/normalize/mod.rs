@@ -22,9 +22,21 @@ pub async fn normalize_bookmarks(
 ) -> Result<(BookmarksFileDto, NormalizeStats)> {
     let mut stats = NormalizeStats::default();
 
-    emit(&sink, AppEvent::PhaseStarted { name: "parse_and_index".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseStarted {
+            name: "parse_and_index".into(),
+        },
+    )
+    .await;
     let mut arena = build::build_arena_from_dto(&input, &mut stats);
-    emit(&sink, AppEvent::PhaseFinished { name: "parse_and_index".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseFinished {
+            name: "parse_and_index".into(),
+        },
+    )
+    .await;
 
     emit(&sink, AppEvent::PhaseStarted { name: "scc".into() }).await;
     let (graph, scc_summary) = graph::build_identity_graph(&arena);
@@ -41,25 +53,79 @@ pub async fn normalize_bookmarks(
     .await;
     emit(&sink, AppEvent::PhaseFinished { name: "scc".into() }).await;
 
-    emit(&sink, AppEvent::PhaseStarted { name: "global_folder_merge".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseStarted {
+            name: "global_folder_merge".into(),
+        },
+    )
+    .await;
     folder_merge::global_folder_merge(&mut arena, &sink, &mut stats).await;
-    emit(&sink, AppEvent::PhaseFinished { name: "global_folder_merge".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseFinished {
+            name: "global_folder_merge".into(),
+        },
+    )
+    .await;
 
-    emit(&sink, AppEvent::PhaseStarted { name: "per_folder_url_dedup".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseStarted {
+            name: "per_folder_url_dedup".into(),
+        },
+    )
+    .await;
     url_dedup::per_folder_url_dedup(&mut arena, canonicalizer, &sink, &mut stats).await;
-    emit(&sink, AppEvent::PhaseFinished { name: "per_folder_url_dedup".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseFinished {
+            name: "per_folder_url_dedup".into(),
+        },
+    )
+    .await;
 
-    emit(&sink, AppEvent::PhaseStarted { name: "prune_empty".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseStarted {
+            name: "prune_empty".into(),
+        },
+    )
+    .await;
     prune::prune_empty_folders(&mut arena, &sink, &mut stats).await;
-    emit(&sink, AppEvent::PhaseFinished { name: "prune_empty".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseFinished {
+            name: "prune_empty".into(),
+        },
+    )
+    .await;
 
-    emit(&sink, AppEvent::PhaseStarted { name: "rebuild".into() }).await;
+    emit(
+        &sink,
+        AppEvent::PhaseStarted {
+            name: "rebuild".into(),
+        },
+    )
+    .await;
     let mut out = rebuild::rebuild_dto_from_arena(input, arena, canonicalizer);
     out.extra
-        .insert("x_merge_meta".to_string(), json!({"scc": scc_summary}));
-    emit(&sink, AppEvent::PhaseFinished { name: "rebuild".into() }).await;
+        .insert("x_merge_meta".to_string(), json!({ "scc": scc_summary }));
+    emit(
+        &sink,
+        AppEvent::PhaseFinished {
+            name: "rebuild".into(),
+        },
+    )
+    .await;
 
-    emit(&sink, AppEvent::Finished { stats: stats.clone() }).await;
+    emit(
+        &sink,
+        AppEvent::Finished {
+            stats: stats.clone(),
+        },
+    )
+    .await;
     Ok((out, stats))
 }
 

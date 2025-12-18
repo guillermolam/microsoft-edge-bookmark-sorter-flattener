@@ -49,7 +49,10 @@ pub async fn per_folder_url_dedup(
                             removed_by_url.entry(canon).or_default().push(ch);
                         }
                         UrlWinner::KeepNew => {
-                            removed_by_url.entry(canon.clone()).or_default().push(existing);
+                            removed_by_url
+                                .entry(canon.clone())
+                                .or_default()
+                                .push(existing);
                             best.insert(canon, ch);
                         }
                     }
@@ -62,7 +65,9 @@ pub async fn per_folder_url_dedup(
         }
 
         for (canon, removed) in removed_by_url {
-            let Some(&winner) = best.get(&canon) else { continue };
+            let Some(&winner) = best.get(&canon) else {
+                continue;
+            };
 
             for rm in removed.iter() {
                 // Clone node data first to avoid borrow conflict
@@ -71,7 +76,7 @@ pub async fn per_folder_url_dedup(
                 let rm_name = arena.nodes[rm.0].name.clone();
                 let rm_url = arena.nodes[rm.0].url.clone();
                 let rm_path = arena.nodes[rm.0].path.clone();
-                
+
                 arena.nodes[winner.0].merged_from.push(json!({
                     "id": rm_id,
                     "guid": rm_guid,
@@ -117,7 +122,10 @@ enum UrlWinner {
     KeepNew,
 }
 
-fn pick_url_winner(existing: &crate::usecase::normalize::arena::ArenaNode, new: &crate::usecase::normalize::arena::ArenaNode) -> UrlWinner {
+fn pick_url_winner(
+    existing: &crate::usecase::normalize::arena::ArenaNode,
+    new: &crate::usecase::normalize::arena::ArenaNode,
+) -> UrlWinner {
     // Winner selection:
     // 1) highest visit_count
     // 2) latest date_last_used
@@ -131,11 +139,18 @@ fn pick_url_winner(existing: &crate::usecase::normalize::arena::ArenaNode, new: 
     }
 }
 
-fn url_rank(n: &crate::usecase::normalize::arena::ArenaNode) -> (i64, u64, std::cmp::Reverse<u64>, std::cmp::Reverse<IdKey>) {
+fn url_rank(
+    n: &crate::usecase::normalize::arena::ArenaNode,
+) -> (i64, u64, std::cmp::Reverse<u64>, std::cmp::Reverse<IdKey>) {
     let visit = n.visit_count.unwrap_or(0);
     let last_used = parse_edge_time(n.date_last_used.as_deref());
     let date_added = parse_edge_time(n.date_added.as_deref());
-    (visit, last_used, std::cmp::Reverse(date_added), std::cmp::Reverse(id_key(n.id.as_deref())))
+    (
+        visit,
+        last_used,
+        std::cmp::Reverse(date_added),
+        std::cmp::Reverse(id_key(n.id.as_deref())),
+    )
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -203,7 +218,10 @@ mod tests {
             ..ArenaNode::default()
         };
 
-        assert!(matches!(pick_url_winner(&existing, &new), UrlWinner::KeepNew));
+        assert!(matches!(
+            pick_url_winner(&existing, &new),
+            UrlWinner::KeepNew
+        ));
     }
 
     #[tokio::test]
@@ -216,7 +234,9 @@ mod tests {
             ..ArenaNode::default()
         });
         arena.parent.push(None);
-        arena.root_container.insert("bookmark_bar".to_string(), Handle(0));
+        arena
+            .root_container
+            .insert("bookmark_bar".to_string(), Handle(0));
 
         arena.nodes.push(ArenaNode {
             node_type: "url".to_string(),
@@ -275,7 +295,9 @@ mod tests {
             ..ArenaNode::default()
         });
         arena.parent.push(None);
-        arena.root_container.insert("bookmark_bar".to_string(), Handle(0));
+        arena
+            .root_container
+            .insert("bookmark_bar".to_string(), Handle(0));
 
         // Existing winner: higher visit_count.
         arena.nodes.push(ArenaNode {
@@ -338,7 +360,9 @@ mod tests {
             ..ArenaNode::default()
         });
         arena.parent.push(None);
-        arena.root_container.insert("bookmark_bar".to_string(), Handle(0));
+        arena
+            .root_container
+            .insert("bookmark_bar".to_string(), Handle(0));
 
         // Initial (will lose to the next one).
         arena.nodes.push(ArenaNode {

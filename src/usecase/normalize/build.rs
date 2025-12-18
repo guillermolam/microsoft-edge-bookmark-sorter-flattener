@@ -93,7 +93,8 @@ fn alloc_node(
     }
 
     // Iterative expansion (no recursion).
-    let mut stack: Vec<(Handle, Vec<(usize, BookmarkNodeDto)>, String, usize)> = Vec::new();
+    type BuildStackItem = (Handle, Vec<(usize, BookmarkNodeDto)>, String, usize);
+    let mut stack: Vec<BuildStackItem> = Vec::new();
     stack.push((
         handle,
         dto.children.iter().cloned().enumerate().collect(),

@@ -95,7 +95,7 @@ The implementation correctly treats bookmarks as a **directed graph** rather tha
 $ cargo build
    Compiling microsoft-edge-bookmark-sorter-flattener v1.0.0
     Finished `dev` profile [unoptimized + debuginfo] target(s)
-   
+
 ✅ Builds successfully with 1 harmless warning (unused mark_deleted method)
 ```
 
@@ -104,7 +104,7 @@ $ cargo test
     Finished `test` profile
      Running unittests
 test result: ok. 0 passed; 0 failed; 0 ignored
-   
+
 ✅ All tests pass (no tests currently defined)
 ```
 
