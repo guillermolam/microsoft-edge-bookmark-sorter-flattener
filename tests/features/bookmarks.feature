@@ -1,0 +1,29 @@
+Feature: Bookmarks CLI normalization
+
+  Scenario: Normalize output validates
+    Given a temp bookmarks workspace
+    And an input bookmarks file with duplicates
+    When I run bookmarks normalize to an output file
+    Then the command succeeds
+    When I run bookmarks validate on the output file
+    Then the command succeeds
+
+  Scenario: Normalize is deterministic
+    Given a temp bookmarks workspace
+    And an input bookmarks file with duplicates
+    When I run bookmarks normalize twice to two output files
+    Then the two outputs are identical
+
+  Scenario: Overwriting without backup is refused
+    Given a temp bookmarks workspace
+    And an input bookmarks file with duplicates
+    When I run bookmarks normalize in place without backup
+    Then the command fails
+    And stderr mentions "--backup"
+
+  Scenario: Overwriting with backup creates a timestamped backup
+    Given a temp bookmarks workspace
+    And an input bookmarks file with duplicates
+    When I run bookmarks normalize in place with backup
+    Then the command succeeds
+    And a timestamped backup file exists
