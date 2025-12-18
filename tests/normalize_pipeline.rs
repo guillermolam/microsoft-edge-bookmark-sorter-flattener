@@ -497,37 +497,42 @@ async fn global_folder_merge_normalizes_names_and_merges_across_roots() {
     let mut work_folders = Vec::new();
     work_folders.extend_from_slice(&find_folders_named(&out, "  Work "));
     work_folders.extend_from_slice(&find_folders_named(&out, "work"));
-    assert_eq!(work_folders.len(), 1, "global uniqueness by normalized name");
+    assert_eq!(
+        work_folders.len(),
+        1,
+        "global uniqueness by normalized name"
+    );
 
     let work = work_folders[0];
     let urls = find_urls_in_folder(work);
-    assert_eq!(urls.len(), 2, "both folders' URLs should be merged into winner");
+    assert_eq!(
+        urls.len(),
+        2,
+        "both folders' URLs should be merged into winner"
+    );
     let mut url_names: Vec<String> = urls
         .iter()
         .map(|u| u.name.clone().unwrap_or_default())
         .collect();
     url_names.sort();
-    assert_eq!(url_names, vec!["from_bar".to_string(), "from_other".to_string()]);
+    assert_eq!(
+        url_names,
+        vec!["from_bar".to_string(), "from_other".to_string()]
+    );
 
     let meta = work
         .extra
         .get("x_merge_meta")
         .cloned()
         .expect("winner folder should have x_merge_meta for merged names and paths");
-    let merged_names = meta["merged_names"]
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
+    let merged_names = meta["merged_names"].as_array().cloned().unwrap_or_default();
     assert!(
         merged_names
             .iter()
             .any(|v| v.as_str() == Some("work") || v.as_str() == Some("  Work ")),
         "x_merge_meta.merged_names should record loser folder name",
     );
-    let merged_paths = meta["merged_paths"]
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
+    let merged_paths = meta["merged_paths"].as_array().cloned().unwrap_or_default();
     assert!(
         merged_paths
             .iter()
@@ -591,10 +596,7 @@ async fn url_dedup_resolves_ties_by_id_when_other_fields_equal() {
         .get("x_merge_meta")
         .cloned()
         .expect("winner URL should record merged_from losers");
-    let merged_from = meta["merged_from"]
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
+    let merged_from = meta["merged_from"].as_array().cloned().unwrap_or_default();
     assert_eq!(merged_from.len(), 1);
     assert_eq!(merged_from[0]["id"].as_str(), Some("10"));
 }
